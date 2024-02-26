@@ -1,41 +1,35 @@
-import matplotlib.pyplot as plt
+from pandaenv.envs import *
+from multi_agent_experiment import System, Agent
 import numpy as np
 
-# Define the environment, including the goal and agents
-class Environment:
-    def __init__(self):
-        self.goal = np.array([10, 10])  # Goal position
-        self.agents = {
-            'Agent1': np.array([0., 0.]),
-            'Agent2': np.array([0., 5.]),
-            'Agent3': np.array([5., 0.])
-        }
-        self.step_size = 1  # Predefined distance each agent moves in a step
+import unittest
 
-    def move_agents(self):
-        for name, position in self.agents.items():
-            direction = self.goal - position
-            distance_to_goal = np.linalg.norm(direction)
-            step_distance = min(self.step_size, distance_to_goal)
-            step_direction = direction / distance_to_goal
-            self.agents[name] += step_direction * step_distance
+class TestMyEnv(unittest.TestCase):
+    def setUp(self):
+        agents = [Agent(np.array([0, 0]), 0), Agent(np.array([1, 1]), 1), Agent(np.array([2, 2]), 2)]
+        self.env = MyEnv(size=50, agents=agents)
 
-    def plot_environment(self, step):
-        plt.figure(figsize=(8, 8))
-        for name, position in self.agents.items():
-            plt.plot(position[0], position[1], 'o', label=name)
-        plt.plot(self.goal[0], self.goal[1], 'rx', label='Goal')
-        plt.xlim(-1, 12)
-        plt.ylim(-1, 12)
-        plt.title(f'Step {step}')
-        plt.legend()
-        plt.grid(True)
-        plt.show()
+    def test_distance_and_reward(self):
+        # Set known agent positions and goal
+        self.env.goal = np.array([4, 4])
+        self.env.agents['Agent0'].cord = np.array([3, 3])
+        self.env.agents['Agent1'].cord = np.array([4, 4])
+        self.env.agents['Agent2'].cord = np.array([5, 5])
 
-# Create the environment
-env = Environment()
+        observation = self.env._get_obs()
+        reward = self.env.compute_reward(observation)
 
-# Simulate and plot each step
-for step in range(1, 11):  # Simulate for 10 steps
-    env.move_agents()
-    env.plot_environment(step)
+        # Check distances
+        expected_dists = [np.linalg.norm(np.array([3, 3]) - self.env.goal),
+                          np.linalg.norm(np.array([4, 4]) - self.env.goal),
+                          np.linalg.norm(np.array([5, 5]) - self.env.goal)]
+        computed_dists = [np.linalg.norm(observation[f'Agent{i}'] - self.env.goal) for i in range(len(self.env.agents))]
+
+        for expected, computed in zip(expected_dists, computed_dists):
+            self.assertAlmostEqual(expected, computed, places=5, msg=f"Expected distance {expected}, got {computed}")
+
+        expected_reward = -sum(expected_dists[:2]) + expected_dists[2]
+        self.assertAlmostEqual(reward, expected_reward, places=5, msg=f"Expected reward {expected_reward}, got {reward}")
+
+if __name__ == '__main__':
+    unittest.main()

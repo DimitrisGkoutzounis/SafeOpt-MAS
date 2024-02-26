@@ -5,8 +5,6 @@ import matplotlib.pyplot as plt
 from gym.spaces import Dict, Box
 
 class MyEnv(gym.Env):
-    metadata = {'render.modes': ['human']}
-
     def __init__(self, size=50, agents=None):
         super(MyEnv, self).__init__()
         self.size = size
@@ -17,17 +15,15 @@ class MyEnv(gym.Env):
 
         # self.observation_space = spaces.Box(low=-self.size, high=self.size, shape=(2,), dtype=np.float32)
 
-        # Example correct definition for a multi-agent observation space
         self.observation_space = Dict({
-                f"Agent{i}": Box(low=np.array([-np.inf, -np.inf]), high=np.array([np.inf, np.inf]), dtype=np.float32)
+                f"Agent{i}": Box(low=np.array([-np.inf, -np.inf]), high=np.array([np.inf, np.inf]), dtype=float)
                 for i in range(len(agents))  # Replace `number_of_agents` with your actual number of agents
             })
 
         self.action_space = Dict({
-            
-        })
-        
-        self.action_space = spaces.Box(low=-1, high=1, shape=(2,), dtype=np.float32)
+                f'Agent{i}': Box(low=-1, high=1, shape=(2,), dtype=float) for i in range(len(agents))
+            })
+        # self.action_space = spaces.Box(low=-1, high=1, shape=(2,), dtype=np.float32)
 
         self.goal = np.array([4, 4.])
 
@@ -45,11 +41,14 @@ class MyEnv(gym.Env):
 
         return observations
 
+
     def reset(self, seed=None, **kwargs):
         
 
 
         super().reset(seed=seed, **kwargs)
+
+
         self.goal = self.goal
         print(f"Goal is at {self.goal}")
 
@@ -69,20 +68,27 @@ class MyEnv(gym.Env):
     def step(self, action):
 
         for i, (name, agent) in enumerate(self.agents.items()):
-            agent_action = action[i]
+            agent_action = np.array(action[name], dtype=float)
             agent.cord += agent_action * self.step_size
+
 
         observation = self._get_obs()
         reward = self.compute_reward(observation)
-        done = self._is_success(observation, self.goal)
-        info = { 'is_success': done,
-                    'goal': self.goal,
-                    'observation': observation,
-                }
+        terminated = self._is_success(observation, self.goal)
+        
 
-        return observation, reward, done, info
+        info = { 
+                'is_success': terminated,
+                'goal': self.goal,
+                'observation': observation,
+            }
+
+        return observation, reward, terminated,False, info
 
     def render(self, mode='human', step=None):
+
+        self.render_mode = mode
+
         # Create or clear the figure
         if self.figure is None:
             self.figure, self.ax = plt.subplots(figsize=(8, 8))
@@ -108,7 +114,7 @@ class MyEnv(gym.Env):
 
         # Show the plot
         plt.show(block=False)
-        plt.pause(3)  # Pause to ensure the plot is updated visually
+        plt.pause(1)  # Pause to ensure the plot is updated visually
 
 
     def close(self):
@@ -120,7 +126,6 @@ class MyEnv(gym.Env):
 
         
         dists = [np.linalg.norm(observation[f'Agent{i}'] - self.goal) for i in range(len(self.agents))]
-
         
         reward = dists[0] + dists[1] - dists[2]
         reward *= -1.0

@@ -1,2 +1,2 @@
 
-def plot_gp(opt,x,y):
+class System(object):
