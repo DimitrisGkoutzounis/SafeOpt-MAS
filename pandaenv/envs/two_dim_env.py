@@ -50,12 +50,10 @@ class MyEnv(gym.Env):
 
 
         self.goal = self.goal
-        print(f"Goal is at {self.goal}")
 
         #define initial position of each agent
         for i, (name,agent) in enumerate(self.agents.items()):
             agent.init_dist = np.linalg.norm(agent.cord - self.goal)
-            print(f"Initial distance of {name} from target is {agent.init_dist}")
 
         # Reset each agent's position if needed here
         #For example, agent.cord = np.array([starting_position])
@@ -124,10 +122,11 @@ class MyEnv(gym.Env):
 
     def compute_reward(self, observation):
 
+        distance1 = np.linalg.norm(observation['Agent0'] - self.goal)
+        distance2 = np.linalg.norm(observation['Agent1'] - self.goal)
+        distance3 = np.linalg.norm(observation['Agent2'] - self.goal)
         
-        dists = [np.linalg.norm(observation[f'Agent{i}'] - self.goal) for i in range(len(self.agents))]
-        
-        reward = dists[0] + dists[1] - dists[2]
+        reward = distance1 + distance2 - distance3
         reward *= -1.0
     
         return reward
