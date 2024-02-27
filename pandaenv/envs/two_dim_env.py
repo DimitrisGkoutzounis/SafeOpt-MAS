@@ -31,6 +31,10 @@ class MyEnv(gym.Env):
 
         self.figure = None
 
+    def get_obs(self):
+        "Used only for initialization of agent rewards"
+        return self._get_obs()
+
     def _get_obs(self):
         
         observations = {}
@@ -60,7 +64,8 @@ class MyEnv(gym.Env):
 
         obs = self._get_obs()
         info = {}
-
+        
+        self.close()  # Close the rendering window if it exists
         return (obs, info) 
 
     def step(self, action):
@@ -112,7 +117,7 @@ class MyEnv(gym.Env):
 
         # Show the plot
         plt.show(block=False)
-        plt.pause(1)  # Pause to ensure the plot is updated visually
+        plt.pause(0.3)  # Pause to ensure the plot is updated visually
 
 
     def close(self):
@@ -123,11 +128,11 @@ class MyEnv(gym.Env):
     def compute_reward(self, observation):
 
         distance1 = np.linalg.norm(observation['Agent0'] - self.goal)
-        distance2 = np.linalg.norm(observation['Agent1'] - self.goal)
-        distance3 = np.linalg.norm(observation['Agent2'] - self.goal)
+        #distance2 = np.linalg.norm(observation['Agent1'] - self.goal)
+        #distance3 = np.linalg.norm(observation['Agent2'] - self.goal)
         
-        reward = distance1 + distance2 - distance3
-        reward *= -1.0
+        #reward = distance1 + distance2 + distance3
+        reward = -distance1
     
         return reward
     
@@ -135,7 +140,7 @@ class MyEnv(gym.Env):
     def _is_success(self, observation, goal):
         # Check if any agent is close enough to the goal
         for name, pos in observation.items():
-            if np.linalg.norm(pos - goal) < 0.1:
+            if np.linalg.norm(pos - goal) < 0.2:
                 print(f"{name} is at the goal")
                 print(f"Distance from target is {np.linalg.norm(pos - goal)}")
                 return True
