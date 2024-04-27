@@ -4,11 +4,11 @@ from mpl_toolkits.mplot3d import Axes3D
 
 # Define the global function with single and multiple inputs
 def global_function_single(x):
-    return np.sin(x**3) + np.cos(x**2) - np.sin(x)
+    return -x**3 -x**2 + x
 
 def global_function_multi(x1, x2, x3):
 
-    return np.sin((x1)**3) + np.cos((x2)**2) - np.sin((x3))
+    return -x1**3 - x2**2 + x3
 
 # Create a meshgrid for plotting
 x = np.linspace(-2.5, 2.5, 100)
@@ -51,5 +51,4 @@ global_max_single = np.max(y_single)
 global_max_multi = np.max(y_multi)
 
 
-print(global_function_multi(1.15 ,0.62,-0.62))
 
