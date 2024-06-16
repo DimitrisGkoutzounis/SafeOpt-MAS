@@ -8,3 +8,4 @@ pandaenv.egg-info/top_level.txt
 pandaenv/envs/__init__.py
 pandaenv/envs/tempCodeRunnerFile.py
 pandaenv/envs/two_dim_env.py
+pandaenv/utils/GPLVM.py

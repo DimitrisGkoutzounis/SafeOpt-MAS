@@ -6,7 +6,7 @@ def F_vec(x):
     return -(np.sin(x[0]**3) + np.cos(x[1]**2) - np.sin(x[2]))  # Negate F for maximization
 
 
-bounds = [(-1, 1), (-1, 1), (-1, 1)]
+bounds = [(-1.5, 1.5), (-1.5, 1.5), (-1.5, 1.5)]
 
 result = differential_evolution(F_vec, bounds)
 

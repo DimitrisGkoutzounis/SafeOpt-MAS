@@ -1,17 +1,15 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
-
 # Define the global function with single and multiple inputs
 def global_function_single(x):
-    return -x**3 -x**2 + x
+    return -x**2 + 4*x + x**2 - 4*x + x**2 + 2*x
 
 def global_function_multi(x1, x2, x3):
 
-    return -x1**3 - x2**2 + x3
-
+    return -x1**2 + 4*x1 + x2**2 - 4*x2 + x3**2 + 2*x3
 # Create a meshgrid for plotting
-x = np.linspace(-2.5, 2.5, 100)
+x = np.linspace(-10, 10, 100)
 x1, x2, x3 = np.meshgrid(x, x, x)
 
 # Compute the function values
@@ -49,6 +47,10 @@ plt.show()
 # Find the global maximum for both cases
 global_max_single = np.max(y_single)
 global_max_multi = np.max(y_multi)
+print(f"Global maximum for single input function: {global_max_single}")
+print(f"Global maximum for multi input function: {global_max_multi}")
+
+
 
 
 

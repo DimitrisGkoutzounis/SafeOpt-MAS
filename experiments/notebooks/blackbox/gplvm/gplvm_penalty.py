@@ -11,7 +11,7 @@ from scipy.optimize import minimize
 from sklearn.gaussian_process import kernels
 
 np.set_printoptions(precision=3)
-# np.random.seed(0)
+np.random.seed(0)
 
 
 def rbf_covariance(X1,X2,variance,lengthscale):
@@ -19,7 +19,7 @@ def rbf_covariance(X1,X2,variance,lengthscale):
     noise_term = np.eye(X1.shape[0]) * 1
     return variance * kernel(X1,X2) + noise_term   
 
-def likelihood(params, X, variance, lengthscale, latent_dim,alpha=100):
+def likelihood(params, X, variance, lengthscale, latent_dim,alpha=0):
     N, D = X.shape
 
     # Z = np.reshape(params, (N, latent_dim)) #latent variables
@@ -34,7 +34,7 @@ def likelihood(params, X, variance, lengthscale, latent_dim,alpha=100):
 
     #regularization term that penaltizes off-diagonal elements of the covariance matrix
     off_diag_K_zz = K_zz - np.diag(np.diag(K_zz))
-    penalty = alpha * np.linalg.norm(off_diag_K_zz, ord='fro')**2
+    penalty = alpha * np.linalg.norm(off_diag_K_zz, ord='fro')
 
     obj = 0.5 * D * log_det_K_zz + 0.5 * trace + penalty
     return obj  # Minimizing negative likelihood (maximizing likelihood)
@@ -70,11 +70,13 @@ if __name__ == '__main__':
 
 
     latent_dim = 1
-    n = 5
+    n = 30
 
-    x1 = np.random.uniform(-1.5,1.5,n)
-    x2 = np.random.uniform(-1.5,1.5,n)
-    x3 = np.random.uniform(-1.5,1.5,n)
+
+    # Define the different distributions for x1, x2, x3
+    x1 = np.random.normal(-5, 1, n)  # Normal distribution with mean -5 and std 1
+    x2 = np.random.normal(0, 1, n)   # Normal distribution with mean 0 and std 1
+    x3 = np.random.normal(5, 1, n)   # Normal distribution with mean 5 and std 1
     
     print("x1\n",x1)
 
@@ -119,7 +121,32 @@ if __name__ == '__main__':
     plt.title('Predicted mean $K_{zj}^T K_{zz}^{-1}')
 
 
+    plt.figure(figsize=(16, 6))
+
+    # Plot Input Features X vs Input Features X
+    plt.subplot(1, 2, 1)  # 1 row, 2 columns, 1st subplot
+    plt.scatter(X[:, 0], X[:, 1], c='blue', label='x1 vs x2')
+    plt.scatter(X[:, 0], X[:, 2], c='red', label='x1 vs x3')
+    plt.scatter(X[:, 1], X[:, 2], c='green', label='x2 vs x3')
+    plt.xlabel('Input Features X')
+    plt.ylabel('Input Features X')
+    plt.legend()
+    plt.title('Input Features X vs Input Features X')
+
+    #latent to action correlation
+    plt.subplot(1, 2, 2)  # 1 row, 2 columns, 2nd subplot
+    plt.scatter(Z[:, 0], X[:, 0], c='blue', label='Latent vs x1')
+    plt.scatter(Z[:, 0], X[:, 1], c='red', label='Latent vs x2')
+    plt.scatter(Z[:, 0], X[:, 2], c='green', label='Latent vs x3')
+    plt.xlabel('Latent Variable Z')
+    plt.ylabel('Input Features X')
+    plt.legend()
+    plt.title('Latent Variable Z vs Input Features X')
+
     plt.show()
+
+    
+
 
 
     # #select the jth column of Z

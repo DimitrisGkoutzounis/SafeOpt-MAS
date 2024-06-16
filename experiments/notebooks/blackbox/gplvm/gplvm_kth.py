@@ -9,10 +9,12 @@ import time
 from tqdm import tqdm
 # from fake_dataset import generate_observations, plot
 from datetime import datetime
-
+import safeopt
+import GPy
 name = "experiemnt"
 iteration = 0
 
+    
 
 def kernel(X, Y, alpha, beta, gamma):
     kernel = kernels.RBF(length_scale=(1./gamma**2))
@@ -32,7 +34,9 @@ def likelihood(var, *args):
     trace = np.sum(np.dot(K.I, YYT))
     return D*np.log(np.abs(np.linalg.det(K)))/2 + trace/2
 
-def simple_gplvm(Y, experiment_name="experiment", latent_dimension=1):
+
+
+def simple_gplvm(Y, experiment_name="experiment", latent_dimension=3):
     ''' Implementation of GPLVM algorithm, returns data in latent space
     '''
     global name
@@ -59,31 +63,83 @@ def simple_gplvm(Y, experiment_name="experiment", latent_dimension=1):
     return Z
 
 
+
+class Agent:
+    def __init__(self,id,bounds,safe_point):
+
+        self.bounds = [bounds]
+        self.id = id
+        self.safepoint = safe_point
+        self.global_rewards = np.array([])
+        self.max_belief = np.array([[]])
+
+        self.x0 = np.asarray([[self.safepoint]])
+        self.y0 = np.asarray([[1]])
+        print(self.y0)
+
+        self.kernel = GPy.kern.RBF(1)
+        self.gp = GPy.models.GPRegression(self.x0,self.y0, self.kernel, noise_var=0.05**2)
+        self.parameter_set = safeopt.linearly_spaced_combinations(self.bounds, 100)
+        self.opt = safeopt.SafeOpt(self.gp, self.parameter_set, -np.inf,beta=4,threshold=0.2)
+
+    def optimize(self):
+        x_next = self.opt.optimize()
+        return x_next
+    
+    def update(self,x_next,y_meas):
+        self.max_belief = np.append(self.max_belief,self.opt.get_maximum()[1])
+    
+        self.opt.add_new_data_point(x_next,y_meas)
+
+    def plot_opt(self):
+        self.opt.plot(1000)
+
+def run_experiments(a1,a2,a3,iterations):
+
+    for i in range(iterations):
+        x1 = a1.optimize()
+        x2 = a2.optimize()
+        x3 = a3.optimize()
+
+        y = global_reward(x1,x2,x3)
+
+        a1.update(x1,y)
+        a2.update(x2,y)
+        a3.update(x3,y)
+
+    return  a1.gp.X, a2.gp.X, a3.gp.X
+
+
+def global_reward(x1,x2,x3):
+    y = np.sin(x1**3) + np.cos(x2**2) - x3
+    return y
+
+
 if __name__ == "__main__":
-    N = 2  # Number of observations
+    N = 30  # Number of observations
     D = 1  # Y dimension (observations)
 
-    # x1= np.random.uniform(-1.5, 1.5, N)
-    x1= np.array([0.5928,-1.3193])
+    agent1 = Agent(1, (-1.5, 1.5), 0)
+    agent2 = Agent(2, (-1.5, 1.5), 0.1)
+    agent3 = Agent(3, (-1.5, 1.5), 0.2)
 
-    x2 =np.array([0.500,0.511])
+    x1, x2, x3 = run_experiments(agent1, agent2, agent3, N)
 
-    X_data = np.vstack([x1,x2]).T
+
+    X_data = np.vstack([x1.T, x2.T, x3.T]).T
+    print("X_data shape:", X_data)
+    
 
     print("X_data shape:", X_data.size)
 
     gp_vals = simple_gplvm(Y=X_data, experiment_name="test")  # Compute values
     # gp_vals = np.array(list(np.load("results/var.npy"))[:-3]).reshape((N, 2))  # Load from memory
 
-    K_II = kernel(X_data, X_data, 1, 1, 1)
-    K_II_inv = np.linalg.inv(K_II)
-    j_column = np.asarray([gp_vals[:,:]]).T
-
-    K_IJ = kernel(X_data, j_column.reshape(1,N), 1, 1, 1)
-
-
-    Y_transpose = X_data.T
-
-    mean = np.dot(np.dot(K_IJ,K_II_inv),Y_transpose)
-
-    print(mean)
+    #print latent space
+    model1 = GPy.models.GPRegression(gp_vals[:,0].reshape(-1,1),agent1.gp.Y.reshape(-1,1), GPy.kern.RBF(1))
+    model1.plot()
+    model2 = GPy.models.GPRegression(gp_vals[:,1].reshape(-1,1),agent2.gp.Y.reshape(-1,1), GPy.kern.RBF(1))
+    model2.plot()
+    model3 = GPy.models.GPRegression(gp_vals[:,2].reshape(-1,1),agent3.gp.Y.reshape(-1,1), GPy.kern.RBF(1))
+    model3.plot()
+    plt.show()
