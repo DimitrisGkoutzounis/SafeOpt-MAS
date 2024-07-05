@@ -97,9 +97,6 @@ def column_wise(Z_flat, X, D, N, f,lambda1,lambda2,lambda3):
     
     computed_z = action_term + lambda3 * trace_term 
 
-    # print("Trace(opt): ", trace_term)
-    # print("Trace(OPT)", np.trace(dot_product_matrix))
-
 
     return computed_z
 
@@ -114,9 +111,7 @@ os.makedirs(plot_directory, exist_ok=True)
 if __name__ == '__main__':
     N = 5
     D = 3
-    lambda_interval = 0.2
-    lambda_range = np.arange(0.2, 1 + lambda_interval, lambda_interval)
-    print(lambda_range)
+    lambda_values =[0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
     csv_path = os.path.join(log_directory, 'experiment_data.csv')
 
     # Generate actions
@@ -125,9 +120,9 @@ if __name__ == '__main__':
     Z = np.random.uniform(-1.5, 1.5, (N, D))
 
     for experiment_number in range(1):
-        for lambda1 in lambda_range:
-            for lambda2 in lambda_range:
-                for lambda3 in lambda_range:
+        for lambda1 in lambda_values:
+            for lambda2 in lambda_values:
+                for lambda3 in lambda_values:
                     print("Experiment: ", experiment_number)
                     print(f"Running for lambda1={lambda1}, lambda2={lambda2}, lambda3={lambda3}, Seed={experiment_number}")
 
