@@ -3,6 +3,8 @@ import GPy
 from scipy.optimize import minimize
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+from optimparallel import minimize_parallel
+
 
 
 
@@ -148,7 +150,7 @@ def column_wise(Z_flat, X, D, N, sigma2, f):
         diff1 = np.linalg.norm(X_d - mu_d)**2
         diff2 = np.linalg.norm(mu_d - mu_all[:, [d]])**2
         
-        loss += diff1 + 0.2 * diff2
+        action_term += diff1 + 0.2 * diff2
 
         # Gradient-based alignment term
         grad_R_Z = compute_gradient(model_Z, Z).reshape(N, D)
@@ -160,17 +162,10 @@ def column_wise(Z_flat, X, D, N, sigma2, f):
         U_z[:, d] = grad_R_Z[:, d] / grad_R_Z_norm_column[d]
         U_x[:, d] = grad_R_X[:, d] / grad_R_X_norm_column[d]
 
-
-    # Compute the dot product matrix after the loop
     dot_product_matrix = np.dot(U_z.T, U_x)
-    diag_penalty = np.linalg.norm((1 - np.diag(dot_product_matrix)))/D
-
-    # mu_z_est , _ = model_Z.predict_noiseless(Z)
-    # mu_x_est , _ = model_X.predict_noiseless(X)
-
-    # diff3 = np.linalg.norm(mu_x_est - mu_z_est)**2
+    diag_penalty = np.linalg.norm((1 - np.diag(dot_product_matrix))**2)/D
     
-    total_loss = loss + diag_penalty 
+    total_loss = action_term + diag_penalty 
 
 
     return total_loss
@@ -178,7 +173,7 @@ def column_wise(Z_flat, X, D, N, sigma2, f):
 
 
 if __name__ == '__main__':
-    N=3
+    N=10
     D=3
 
     X1, X2,X3, R_original = generate_actions(N)
@@ -196,7 +191,9 @@ if __name__ == '__main__':
 
     U_x, U_z = create_U_matrice_columnwise(model_X,model_Z_init,X,Z)
 
-    result = minimize(column_wise, Z.flatten(), args=(X, D, N, 1e-2, f), method='L-BFGS-B')
+
+    result = minimize(column_wise, Z.flatten(), args=(X, D, N, 1e-2, f), method='L-BFGS-B',options={'ftol':1e-2,'gtol':1e-2,'xtol':1e-2})
+    # result = minimize_parallel(column_wise, Z.flatten(), args=(X, D, N, 1e-2, f))
 
     Z_opt = result.x.reshape(N, D)
 
