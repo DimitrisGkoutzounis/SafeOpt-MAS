@@ -109,9 +109,15 @@ os.makedirs(log_directory, exist_ok=True)
 os.makedirs(plot_directory, exist_ok=True)
 
 if __name__ == '__main__':
-    N = 5
+    N = 10
     D = 3
+<<<<<<< HEAD
     lambda_values =[0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
+=======
+    lambda_interval = 0.2
+    lambda_range = np.arange(0.0, 1 + lambda_interval, lambda_interval)
+    print(lambda_range)
+>>>>>>> 505546a (Added 10 samples experiment)
     csv_path = os.path.join(log_directory, 'experiment_data.csv')
 
     # Generate actions
