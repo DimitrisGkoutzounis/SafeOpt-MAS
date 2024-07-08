@@ -8,5 +8,5 @@
 
 source activate conda-example  # Activate your virtual environment
 
-srun python3 experiment_objective.py
+srun python3 experiment2_objective.py
 
