@@ -10,45 +10,14 @@ from optimparallel import minimize_parallel
 
 # Define the global reward function
 def f(x1, x2, x3):
-    y = np.sin(x1**3) + np.cos(x2**2) - np.sin(x3)
+    y = np.exp(-x1**2-x2**2)*np.cos(x3)
     return y
-
-# Define the function to run experiments
-def run_experiments(a1, a2, a3, iterations):
-    rewards = np.array([])
-    actions_1 = np.array([])
-    actions_2 = np.array([])
-    actions_3 = np.array([])
-
-    for i in range(iterations):
-        x1 = a1.optimize()
-        x2 = a2.optimize()
-        x3 = a3.optimize()
-
-        actions_1 = np.append(actions_1, x1)
-        actions_2 = np.append(actions_2, x2)
-        actions_3 = np.append(actions_3, x3)
-
-        y = f(x1, x2, x3)
-        rewards = np.append(rewards, y)
-
-        # 50% of the time maximize, 50% of the time minimize (by changing the sign of the reward)
-        if i < iterations // 2:
-            a1.update(x1, y)
-            a2.update(x2, y)
-            a3.update(x3, y)
-        else:
-            a1.update(x1, -y)
-            a2.update(x2, -y)
-            a3.update(x3, -y)
-
-    return actions_1, actions_2, actions_3, rewards
 
 
 def generate_actions(N):
-    x1 = np.random.uniform(-1.5, 1.5, N)
-    x2 = np.random.uniform(-1.5, 1.5, N)
-    x3 = np.random.uniform(-1.5, 1.5, N)
+    x1 = np.random.uniform(-1, 1, N)
+    x2 = np.linspace(-1, 1, N)
+    x3 = np.linspace(-1, 1, N)
     R = f(x1, x2, x3)
     return x1, x2, x3, R
 
@@ -124,57 +93,60 @@ def plot_3d_vector_column_wise(U_x, U_z):
     # Display the plot
     plt.show()
 
-def column_wise(Z_flat, X, D, N, sigma2, f):
+def column_wise(Z_flat, X, D, N, f,lambda1,lambda2,lambda3):
     Z = Z_flat.reshape(N, D)
 
+    rbf_kernel = GPy.kern.RBF(D)
+
     # Define model_Z with R_z as observations
-    model_Z = GPy.models.GPRegression(Z, R.reshape(-1,1), GPy.kern.RBF(D))
-    model_all = GPy.models.GPRegression(Z, X,  GPy.kern.RBF(D))
+    model_Z = GPy.models.GPRegression(Z, R.reshape(-1,1), rbf_kernel.copy())
+    model_all = GPy.models.GPRegression(Z, X,  rbf_kernel.copy())
     mu_all, _ = model_all.predict_noiseless(Z)
 
-    loss = 0.0
-    grad_R_Z_norm_column = []
-    grad_R_X_norm_column = []
-
+    
     # Initialize matrices for U_z and U_x
     U_z = np.zeros((N, D))
     U_x = np.zeros((N, D))
+
+    grad_R_Z = compute_gradient(model_Z, Z).reshape(N, D)
+    grad_R_X = compute_gradient(model_X, X).reshape(N, D)
+
+    action_term = 0.0
 
     for d in range(D):
         X_d = np.zeros_like(X)
         X_d[:, d] = X[:, d]
         
-        model_d = GPy.models.GPRegression(Z, X_d,GPy.kern.RBF(D))
+        model_d = GPy.models.GPRegression(Z, X_d,rbf_kernel.copy())
         mu_d, _ = model_d.predict_noiseless(Z)
 
         diff1 = np.linalg.norm(X_d - mu_d)**2
         diff2 = np.linalg.norm(mu_d - mu_all[:, [d]])**2
         
-        action_term += diff1 + 0.2 * diff2
+        action_term += lambda1 * diff1 + lambda2 * diff2
 
-        # Gradient-based alignment term
-        grad_R_Z = compute_gradient(model_Z, Z).reshape(N, D)
-        grad_R_X = compute_gradient(model_X, X).reshape(N, D)
+        # create unit vector matrices
+        U_z[:, d] = grad_R_Z[:, d] / np.linalg.norm(grad_R_Z[:, d])
+        U_x[:, d] = grad_R_X[:, d] / np.linalg.norm(grad_R_X[:, d])
 
-        grad_R_Z_norm_column.append(np.linalg.norm(grad_R_Z[:, d]))
-        grad_R_X_norm_column.append(np.linalg.norm(grad_R_X[:, d]))
-
-        U_z[:, d] = grad_R_Z[:, d] / grad_R_Z_norm_column[d]
-        U_x[:, d] = grad_R_X[:, d] / grad_R_X_norm_column[d]
-
+    #compute the dot product matrix
     dot_product_matrix = np.dot(U_z.T, U_x)
-    diag_penalty = np.linalg.norm((1 - np.diag(dot_product_matrix))**2)/D
+    gradient_term = np.linalg.norm((1 - np.diag(dot_product_matrix))**2)/D
+    trace_term = np.linalg.norm((1 - (np.trace(dot_product_matrix))))/D
+    # print("Trace(opt): ", (1-np.trace(dot_product_matrix)/D))
     
-    total_loss = action_term + diag_penalty 
+    computed_z = action_term + lambda3 * trace_term 
 
 
-    return total_loss
-
+    return computed_z
 
 
 if __name__ == '__main__':
-    N=3
+    N=20
     D=3
+    lambda1 = 1
+    lambda2 = 1
+    lambda3 = 1
 
     X1, X2,X3, R_original = generate_actions(N)
     X = np.vstack((X1, X2,X3)).T
@@ -192,7 +164,7 @@ if __name__ == '__main__':
     U_x, U_z = create_U_matrice_columnwise(model_X,model_Z_init,X,Z)
 
 
-    result = minimize(column_wise, Z.flatten(), args=(X, D, N, 1e-2, f), method='L-BFGS-B',options={'ftol':1e-2,'gtol':1e-2,'xtol':1e-2})
+    result = minimize(column_wise, Z.flatten(), args=(X, D, N, f,lambda1,lambda2,lambda3), method='L-BFGS-B',options={'ftol':1e-2,'gtol':1e-2})
     # result = minimize_parallel(column_wise, Z.flatten(), args=(X, D, N, 1e-2, f))
 
     Z_opt = result.x.reshape(N, D)

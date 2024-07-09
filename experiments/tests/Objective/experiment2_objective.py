@@ -12,7 +12,7 @@ np.random.seed(2)
 
 # Define the global reward function
 def f(x1, x2, x3):
-    y = np.sin(x1**3) + np.cos(x2**2) - np.sin(x3)
+    y = np.exp(-x1**2-x2**2)*np.cos(x3)
     return y
 
 
