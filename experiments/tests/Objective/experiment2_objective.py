@@ -119,11 +119,15 @@ if __name__ == '__main__':
     X = np.vstack((X1, X2, X3)).T
     Z = np.random.uniform(-1.5, 1.5, (N, D))
 
-    for experiment_number in range(1):
-        for lambda1 in lambda_values:
-            for lambda2 in lambda_values:
+    total_experiments = len(lambda_values)**3
+    experiment_number = 0
+
+ 
+    for lambda1 in lambda_values:
+         for lambda2 in lambda_values:
                 for lambda3 in lambda_values:
-                    print("Experiment: ", experiment_number)
+                    experiment_number += 1
+                    print("Experiemnt number: ",experiment_number)
                     print(f"Running for lambda1={lambda1}, lambda2={lambda2}, lambda3={lambda3}, Seed={experiment_number}")
 
 
@@ -147,7 +151,6 @@ if __name__ == '__main__':
                     U_x_init, U_z_init,trace_before = compute_trace(model_X, model_Z_init, X, Z)
                     U_X_opt, U_Z_opt,trace_after = compute_trace(model_X, model_Z_opt, X, Z_opt)
 
-                    # Prepare data for CSV
                     data = {
                         'Experiment': [experiment_number] * N,
                         'Lambda1': [lambda1] * N,
