@@ -17,9 +17,9 @@ def f(x1, x2, x3):
 
 
 def generate_actions(N):
-    x1 = np.random.uniform(-1.5, 1.5, N)
-    x2 = np.random.uniform(-1.5, 1.5, N)
-    x3 = np.random.uniform(-1.5, 1.5, N)
+    x1 = np.random.uniform(-1, 1, N)
+    x2 = np.random.uniform(-1, 1, N)
+    x3 = np.random.uniform(-1, 1, N)
     R = f(x1, x2, x3)
     return x1, x2, x3, R
 
