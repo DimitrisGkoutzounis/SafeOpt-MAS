@@ -8,20 +8,25 @@ import logging
 import os
 import pandas as pd
 
-np.random.seed(2)
+# np.random.seed(2)
+J1_history = []
+J2_history = []
+J3_history = []
+Total_cost_history = []
+
 
 # Define the global reward function
-def f(x1, x2, x3):
-    y = np.exp(-x1**2-x2**2)*np.cos(x3)
+def f(x1, x2):
+    y = x1 - x2
     return y
 
 
 def generate_actions(N):
     x1 = np.random.uniform(-1, 1, N)
     x2 = np.random.uniform(-1, 1, N)
-    x3 = np.random.uniform(-1, 1, N)
-    R = f(x1, x2, x3)
-    return x1, x2, x3, R
+    # x3 = np.random.uniform(-1, 1, N)
+    R = f(x1, x2)
+    return x1, x2,R
 
 def compute_gradient(model, X):
     dmu_dX, _ = model.predictive_gradients(X)
@@ -72,6 +77,7 @@ def column_wise(Z_flat, X, D, N, f,lambda1,lambda2,lambda3):
     grad_R_X = compute_gradient(model_X, X).reshape(N, D)
 
     action_term = 0.0
+    cost3 = 0.0
 
     for d in range(D):
         X_d = np.zeros_like(X)
@@ -80,10 +86,10 @@ def column_wise(Z_flat, X, D, N, f,lambda1,lambda2,lambda3):
         model_d = GPy.models.GPRegression(Z, X_d,rbf_kernel.copy())
         mu_d, _ = model_d.predict_noiseless(Z)
 
-        diff1 = np.linalg.norm(X_d - mu_d)**2
-        diff2 = np.linalg.norm(mu_d - mu_all[:, [d]])**2
+        cost1 = np.linalg.norm(X_d - mu_d)**2
+        cost2 = np.linalg.norm(mu_d - mu_all[:, [d]])**2
         
-        action_term += lambda1 * diff1 + lambda2 * diff2
+        action_term += lambda1 * cost1 + lambda2 * cost2
 
         # create unit vector matrices
         U_z[:, d] = grad_R_Z[:, d] / np.linalg.norm(grad_R_Z[:, d])
@@ -92,10 +98,13 @@ def column_wise(Z_flat, X, D, N, f,lambda1,lambda2,lambda3):
     #compute the dot product matrix
     dot_product_matrix = np.dot(U_z.T, U_x)
     # gradient_term = np.linalg.norm((1 - np.diag(dot_product_matrix))**2)/D
-    trace_term = np.linalg.norm((1 - (np.trace(dot_product_matrix))))/D
+    cost3 = np.linalg.norm((1 - (np.trace(dot_product_matrix))))/D
+    J1_history.append(cost1)
+    J2_history.append(cost2)
+    J3_history.append(cost3)
     # print("Trace(opt): ", (1-np.trace(dot_product_matrix)/D))
     
-    computed_z = action_term + lambda3 * trace_term 
+    computed_z = action_term + lambda3 * cost3 
 
 
     return computed_z
@@ -110,13 +119,13 @@ os.makedirs(plot_directory, exist_ok=True)
 
 if __name__ == '__main__':
     N = 20
-    D = 3
+    D = 2
     lambda_values =[0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
     csv_path = os.path.join(log_directory, 'experiment_data.csv')
 
     # Generate actions
-    X1, X2, X3, R_original = generate_actions(N)
-    X = np.vstack((X1, X2, X3)).T
+    X1, X2, R_original = generate_actions(N)
+    X = np.vstack((X1, X2)).T
     Z = np.random.uniform(-1.5, 1.5, (N, D))
 
     total_experiments = len(lambda_values)**3
@@ -135,8 +144,8 @@ if __name__ == '__main__':
                     print(f"Z: {Z}")
 
                     # Perform experiments
-                    R = f(X1, X2, X3)
-                    R_Z_init = f(Z[:,0], Z[:,1], Z[:,2])
+                    R = f(X1, X2)
+                    R_Z_init = f(Z[:,0], Z[:,1])
 
                     model_X = GPy.models.GPRegression(X, R_original[:, None], GPy.kern.RBF(input_dim=D))
                     model_Z_init = GPy.models.GPRegression(Z, R_Z_init[:, None], GPy.kern.RBF(input_dim=D))
@@ -145,7 +154,7 @@ if __name__ == '__main__':
                     result = minimize(column_wise, Z.flatten(), args=(X, D, N, f, lambda1, lambda2, lambda3), method='L-BFGS-B', options={'ftol': 1e-2, 'gtol': 1e-2, 'xtol': 1e-2})
 
                     Z_opt = result.x.reshape(N, D)
-                    R_Z_opt = f(Z_opt[:, 0], Z_opt[:, 1], Z_opt[:, 2])
+                    R_Z_opt = f(Z_opt[:, 0], Z_opt[:, 1])
                     model_Z_opt = GPy.models.GPRegression(Z_opt, R_Z_opt[:, None], GPy.kern.RBF(input_dim=D))
 
                     U_x_init, U_z_init,trace_before = compute_trace(model_X, model_Z_init, X, Z)
@@ -158,10 +167,8 @@ if __name__ == '__main__':
                         'Lambda3': [lambda3] * N,
                         'X1': X[:, 0],
                         'X2': X[:, 1],
-                        'X3': X[:, 2],
                         'Z1': Z_opt[:, 0],
                         'Z2': Z_opt[:, 1],
-                        'Z3': Z_opt[:, 2],
                         'R': R,
                         'R_Z_opt': R_Z_opt,
                         'Trace_before': trace_before,

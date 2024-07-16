@@ -5,15 +5,23 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from optimparallel import minimize_parallel
 
+from scipy.stats import pearsonr, spearmanr, kendalltau
+
+J1_history = []
+J2_history = []
+J3_history = []
+Total_cost_history = []
+
+
 # Define the global reward function
 def f(x1, x2, x3):
-    y = np.exp(-x1**2-x2**2)*np.cos(x3)
+    y = np.sin(x1**3) + np.cos(x2**2) + np.sin(x3)
     return y
 
 def generate_actions(N):
     x1 = np.random.uniform(-1, 1, N)
-    x2 = np.linspace(-1, 1, N)
-    x3 = np.linspace(-1, 1, N)
+    x2 = np.random.uniform(-1, 1, N)
+    x3 = np.random.uniform(-1, 1, N)
     R = f(x1, x2, x3)
     return x1, x2, x3, R
 
@@ -47,7 +55,7 @@ def create_U_matrice_columnwise(model_X,model_Z,X,Z):
 
     dot_product_matrix = np.dot(U_z.T, U_x)
     print('dot_product_matrix\n', dot_product_matrix)
-    print("Trace:", np.sum(np.diag(dot_product_matrix))/D)
+    # print("Trace:", np.sum(np.diag(dot_product_matrix))/D)
 
     return U_x, U_z
 
@@ -108,6 +116,7 @@ def column_wise(Z_flat, X, D, N, f,lambda1,lambda2,lambda3):
     grad_R_X = compute_gradient(model_X, X).reshape(N, D)
 
     action_term = 0.0
+    total_cost = 0.0
 
     for d in range(D):
         X_d = np.zeros_like(X)
@@ -116,10 +125,11 @@ def column_wise(Z_flat, X, D, N, f,lambda1,lambda2,lambda3):
         model_d = GPy.models.GPRegression(Z, X_d,rbf_kernel.copy())
         mu_d, _ = model_d.predict_noiseless(Z)
 
-        diff1 = np.linalg.norm(X_d - mu_d)**2
-        diff2 = np.linalg.norm(mu_d - mu_all[:, [d]])**2
+        cost1 = np.linalg.norm(X_d - mu_d)**2
+        cost2 = np.linalg.norm(mu_d - mu_all[:, [d]])**2
+
         
-        action_term += lambda1 * diff1 + lambda2 * diff2
+        action_term += lambda1 * cost1 + lambda2 * cost2
 
         # create unit vector matrices
         U_z[:, d] = grad_R_Z[:, d] / np.linalg.norm(grad_R_Z[:, d])
@@ -127,19 +137,26 @@ def column_wise(Z_flat, X, D, N, f,lambda1,lambda2,lambda3):
 
     #compute the dot product matrix
     dot_product_matrix = np.dot(U_z.T, U_x)
-    gradient_term = np.linalg.norm((1 - np.diag(dot_product_matrix))**2)/D
-    trace_term = np.linalg.norm((1 - (np.trace(dot_product_matrix))))/D
-    # print("Trace(opt): ", (1-np.trace(dot_product_matrix)/D))
+    # gradient_term = np.linalg.norm((1 - np.diag(dot_product_matrix))**2)/D
+    cost3 = np.linalg.norm((1 - (np.trace(dot_product_matrix))))/D
+    J3_history.append(cost3)
+    J1_history.append(cost1)
+    J2_history.append(cost2)
+    # print("Trace(opt): ", np.trace(dot_product_matrix)/D)
     
-    computed_z = action_term + lambda3 * trace_term 
+    total_cost = action_term + lambda3 * cost3 
+
+    Total_cost_history.append(total_cost)
 
 
-    return computed_z
+    return total_cost  
 
 
 if __name__ == '__main__':
-    N=5
+    N=20
     D=3
+
+    # np.random.seed(0)
     lambda1 = 1
     lambda2 = 1
     lambda3 = 1
@@ -147,11 +164,11 @@ if __name__ == '__main__':
     X1, X2,X3, R_original = generate_actions(N)
     X = np.vstack((X1, X2,X3)).T
 
-    Z = np.random.uniform(-1.5, 1.5, (N, D))
+    Z = np.random.uniform(-1, 1, (N, D))
 
 
     #perfrom experiments
-    R = f(X1, X2,X3)
+    R = f(X1,X2,X3)
     R_Z_init = f(Z[:,0], Z[:,1], Z[:,2])
 
     model_X = GPy.models.GPRegression(X, R_original[:, None], GPy.kern.RBF(input_dim=D))
@@ -160,7 +177,7 @@ if __name__ == '__main__':
     U_x, U_z = create_U_matrice_columnwise(model_X,model_Z_init,X,Z)
 
 
-    result = minimize(column_wise, Z.flatten(), args=(X, D, N, f,lambda1,lambda2,lambda3), method='L-BFGS-B',options={'ftol':1e-2,'gtol':1e-2})
+    result = minimize(column_wise, Z.flatten(), args=(X, D, N, f,lambda1,lambda2,lambda3), method='L-BFGS-B',options={'ftol':1e-3,'gtol':1e-3})
     # result = minimize_parallel(column_wise, Z.flatten(), args=(X, D, N, 1e-2, f))
 
     Z_opt = result.x.reshape(N, D)
@@ -174,16 +191,36 @@ if __name__ == '__main__':
 
 
 
-print("U_x\n", U_x)
-print("U_z\n", U_z)
-print("U_X_opt\n", U_X_opt)
-print("U_Z_opt\n", U_Z_opt)
-
+print(f"Inital Z: {Z}")
+print(f"Optimal Z: {Z_opt}")
 plt.figure(figsize=(15, 6))
 plt.plot(R, label='R(x)', marker='o', markersize=5)
 plt.plot(R_Z_opt, label='R(z)', marker='x', markersize=5)
 plt.title('R(x) vs R(z)')
 plt.xlabel('Sample')
 plt.ylabel('Reward')
+plt.legend()
+
+
+plt.figure(figsize=(15, 6))
+plt.plot(R, label='R(x)', marker='o', markersize=5)
+plt.plot(R_Z_init, label='R(Z_init)')
+plt.plot(R_Z_opt, label='R(Z_opt)', marker='x', markersize=5)
+plt.title('R(x) vs R(z)')
+plt.xlabel('Sample')
+plt.ylabel('Reward')
+plt.legend()
+
+plt.figure(figsize=(15, 6))
+plt.plot(R, label='R(x)', marker='o', markersize=5)
+plt.plot(R_Z_opt, label='R(Z_after)', marker='x', markersize=5)
+plt.plot(R_Z_init, label='R(Z_before)', marker='x', markersize=5)
+plt.xlabel('Sample')
+plt.ylabel('Reward')
+plt.legend()
+
+plt.figure(figsize=(15, 6))
+plt.plot(Z[:,0], label='before')
+plt.plot(Z_opt[:,0], label='after')
 plt.legend()
 plt.show()
