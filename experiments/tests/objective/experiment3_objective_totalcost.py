@@ -121,6 +121,7 @@ if __name__ == '__main__':
     N = 20
     D = 2
     lambda_values =[0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
+    lambda3 = 1.0
     csv_path = os.path.join(log_directory, 'experiment_data.csv')
 
     # Generate actions
@@ -130,65 +131,49 @@ if __name__ == '__main__':
 
     total_experiments = len(lambda_values)**3
     experiment_number = 0
+    
+    total_costs = np.zeros((len(lambda_values), len(lambda_values)))
 
  
-    for lambda1 in lambda_values:
-         for lambda2 in lambda_values:
-                for lambda3 in lambda_values:
-                    experiment_number += 1
-                    print("Experiemnt number: ",experiment_number)
-                    print(f"Running for lambda1={lambda1}, lambda2={lambda2}, lambda3={lambda3}, Seed={experiment_number}")
+    # Iterate over lambda1 and lambda2
+    for i, lambda1 in enumerate(lambda_values):
+        for j, lambda2 in enumerate(lambda_values):
+            
+            print(f"Experiment number: ", experiment_number)
+            print(f"Running for lambda1={lambda1}, lambda2={lambda2}, lambda3={lambda3}")
+            
+            R = f(X1, X2)
+            R_Z_init = f(Z[:, 0], Z[:, 1])
+            
+            model_X = GPy.models.GPRegression(X, R_original[:, None], GPy.kern.RBF(input_dim=D))
+            model_Z_init = GPy.models.GPRegression(Z, R_Z_init[:, None], GPy.kern.RBF(input_dim=D))
+            
+            result = minimize(column_wise, Z.flatten(), args=(X, D, N, f, lambda1, lambda2, lambda3), method='L-BFGS-B', options={'ftol': 1e-2, 'gtol': 1e-2, 'xtol': 1e-2})
+            total_costs[i, j] = result.fun
+            
+            print(f"Lambda1={lambda1}, Lambda2={lambda2}, Cost={result.fun}")
+            
+            data = {
+                'lambda1': lambda1,
+                'lambda2': lambda2,
+                'total_cost': result.fun
+            }
+            df = pd.DataFrame(data, index=[0])
+            if not os.path.exists(csv_path):
+                df.to_csv(csv_path, index=False, mode='w', header=True)
+            else:
+                df.to_csv(csv_path, index=False, mode='a', header=False)
 
+            
+            
 
-                    print(f"X: {X}")
-                    print(f"Z: {Z}")
-
-                    # Perform experiments
-                    R = f(X1, X2)
-                    R_Z_init = f(Z[:,0], Z[:,1])
-
-                    model_X = GPy.models.GPRegression(X, R_original[:, None], GPy.kern.RBF(input_dim=D))
-                    model_Z_init = GPy.models.GPRegression(Z, R_Z_init[:, None], GPy.kern.RBF(input_dim=D))
-                    
-                    #OPTIMIZE
-                    result = minimize(column_wise, Z.flatten(), args=(X, D, N, f, lambda1, lambda2, lambda3), method='L-BFGS-B', options={'ftol': 1e-2, 'gtol': 1e-2, 'xtol': 1e-2})
-
-                    Z_opt = result.x.reshape(N, D)
-                    R_Z_opt = f(Z_opt[:, 0], Z_opt[:, 1])
-                    model_Z_opt = GPy.models.GPRegression(Z_opt, R_Z_opt[:, None], GPy.kern.RBF(input_dim=D))
-
-                    U_x_init, U_z_init,trace_before = compute_trace(model_X, model_Z_init, X, Z)
-                    U_X_opt, U_Z_opt,trace_after = compute_trace(model_X, model_Z_opt, X, Z_opt)
-
-                    data = {
-                        'Experiment': [experiment_number] * N,
-                        'Lambda1': [lambda1] * N,
-                        'Lambda2': [lambda2] * N,
-                        'Lambda3': [lambda3] * N,
-                        'X1': X[:, 0],
-                        'X2': X[:, 1],
-                        'Z1': Z_opt[:, 0],
-                        'Z2': Z_opt[:, 1],
-                        'R': R,
-                        'R_Z_opt': R_Z_opt,
-                        'Trace_before': trace_before,
-                        'Trace_after': trace_after
-                    }
-                    df = pd.DataFrame(data)
-                    # Append to CSV, create if does not exist
-                    if not os.path.exists(csv_path):
-                        df.to_csv(csv_path, index=False, mode='w', header=True)
-                    else:
-                        df.to_csv(csv_path, index=False, mode='a', header=False)
-
-                    # Plot and save the plot
-                    plt.figure(figsize=(15, 6))
-                    plt.plot(R, label='R(x)', marker='o', markersize=5)
-                    plt.plot(R_Z_opt, label='R(z)', marker='x', markersize=5)
-                    plt.title(f'R(x) vs R(z) - Lambda1={lambda1}, Lambda2={lambda2}, Lambda3={lambda3}')
-                    plt.xlabel('Sample')
-                    plt.ylabel('Reward')
-                    plt.legend()
-                    # plot_path = os.path.join(plot_directory, f'plot_exp_{experiment_number}_lambda1_{lambda1}_lambda2_{lambda2}_lambda3_{lambda3}.png')
-                    # plt.savefig(plot_path)
-                    plt.close()
+    # 3D plot of total costs
+    lambda1_mesh, lambda2_mesh = np.meshgrid(lambda_values, lambda_values)
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    ax.plot_surface(lambda1_mesh, lambda2_mesh, total_costs, cmap='viridis')
+    ax.set_xlabel('Lambda1')
+    ax.set_ylabel('Lambda2')
+    ax.set_zlabel('Total Cost')
+    ax.set_title('Total Cost for varying Lambda1 and Lambda2 with fixed Lambda3')
+    plt.show()

@@ -4,6 +4,7 @@ from scipy.optimize import minimize
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from optimparallel import minimize_parallel
+import os
 
 from scipy.stats import pearsonr, spearmanr, kendalltau
 
@@ -204,7 +205,7 @@ plt.legend()
 # Prepare to plot
 fig = plt.figure(figsize=(18, 6))
 
-    # Plot 1: Response Surface R(X)
+# Plot 1: Response Surface R(X)
 ax1 = fig.add_subplot(131, projection='3d')
 ax1.scatter(X1, X2, R, c=R, cmap='viridis', marker='o')
 ax1.set_xlabel('$x_1$')
@@ -217,7 +218,7 @@ surf = ax1.plot_surface(x1, x2, R1, cmap='viridis', alpha=0.5)
 cbar = fig.colorbar(surf, ax=ax1, shrink=0.5, aspect=10)
 cbar.set_label('$R(X)$')
 
-    # Plot 2: Z before optimization
+# Plot 2: Z before optimization
 ax2 = fig.add_subplot(132, projection='3d')
 ax2.scatter(Z[:, 0], Z[:, 1], R_Z_init, c=R_Z_init, cmap='viridis', marker='o')
 ax2.set_xlabel('$z_1$')
@@ -225,7 +226,7 @@ ax2.set_ylabel('$z_2$')
 ax2.set_zlabel('$R(Z)$')
 ax2.set_title('Z Before Optimization')
 
-    # Plot 3: Z after optimization
+# Plot 3: Z after optimization
 ax3 = fig.add_subplot(133, projection='3d')
 ax3.scatter(Z_opt[:, 0], Z_opt[:, 1], R_Z_opt, c=R_Z_opt, cmap='viridis', marker='o')
 ax3.set_xlabel('$z_1$')
@@ -265,5 +266,14 @@ ax2.set_ylabel('Reward')
 ax2.legend()
 ax2.set_title('Reward vs x2')
 
+
+log_directory = "logs"
+plot_directory = "plots"
+os.makedirs(log_directory, exist_ok=True)
+os.makedirs(plot_directory, exist_ok=True)
+
 # Display the plot
 plt.show()
+
+
+ 
