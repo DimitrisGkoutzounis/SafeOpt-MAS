@@ -176,4 +176,6 @@ if __name__ == '__main__':
     ax.set_ylabel('Lambda2')
     ax.set_zlabel('Total Cost')
     ax.set_title('Total Cost for varying Lambda1 and Lambda2 with fixed Lambda3')
+    plot_path = os.path.join(plot_directory, f'plot_exp_{experiment_number}_lambda1_{lambda1}_lambda2_{lambda2}_lambda3_{lambda3}.png')
+    plt.savefig(plot_path)
     plt.show()

@@ -174,6 +174,12 @@ if __name__ == '__main__':
     agent1.plot_opt()
     agent2.plot_opt()
     agent3.plot_opt()
+    
+    model_X_Z_0.plot()
+    model_X_Z_1.plot()
+    model_X_Z_2.plot()
+    
+    plt.show()
 
 
 

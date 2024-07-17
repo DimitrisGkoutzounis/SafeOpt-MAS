@@ -267,13 +267,4 @@ ax2.legend()
 ax2.set_title('Reward vs x2')
 
 
-log_directory = "logs"
-plot_directory = "plots"
-os.makedirs(log_directory, exist_ok=True)
-os.makedirs(plot_directory, exist_ok=True)
-
-# Display the plot
-plt.show()
-
-
  

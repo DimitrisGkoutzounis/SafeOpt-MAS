@@ -178,8 +178,9 @@ if __name__ == '__main__':
     plt.plot(f1, label='f(X)')
     agent1.plot_opt()
     agent2.plot_opt()
-
-    # plt.plot(f3, label='f(Z_init)')
+    
+    model_X_Z_0.plot()
+    model_X_Z_1.plot()
     plt.show()
 
 
