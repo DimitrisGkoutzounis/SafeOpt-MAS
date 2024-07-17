@@ -61,6 +61,11 @@ def extract_data(experiment_data, lambda1, lambda2, lambda3):
     
     return filtered_X, filtered_Z
 
+# Extract R and R_Z_opt based on lambda values
+def extract_rewards(data, lambda1, lambda2, lambda3):
+    filtered_data = data[(data['Lambda1'] == lambda1) & (data['Lambda2'] == lambda2) & (data['Lambda3'] == lambda3)]
+    return filtered_data['R'].values, filtered_data['R_Z_opt'].values
+
 def run_normal_experiment(agent1,agent2,agent3,N):  
 
     for i in range(N):
@@ -123,9 +128,9 @@ if __name__ == '__main__':
 
     grouped = data.groupby(['Lambda1', 'Lambda2', 'Lambda3'])
 
-    lambda1 = 0.0
-    lambda2 = 0.0
-    lambda3 = 0.0
+    lambda1 = 0.6
+    lambda2 = 0.8
+    lambda3 = 0.2
 
     lambda11 = 1.0
     lambda22 = 0.2
@@ -175,14 +180,21 @@ if __name__ == '__main__':
     agent2.plot_opt()
     agent3.plot_opt()
     
-    model_X_Z_0.plot()
-    model_X_Z_1.plot()
-    model_X_Z_2.plot()
-    
+    lambda1, lambda2, lambda3 = 1.0, 1.0, 1.0
+    R, R_Z_opt = extract_rewards(data, lambda1, lambda2, lambda3)
+
+    agent1 = Agent(1, (-1, 1), 0.1)
+    agent2 = Agent(2, (-1, 1), 0.2)
+    agent3 = Agent(3, (-1, 1), 0.3)
+
+    # Assume some interactions or processes here with R and R_Z_opt
+    plt.figure(figsize=(8, 6))
+    plt.plot(R, label='R(x)')
+    plt.plot(R_Z_opt, label='R(z_opt)')
+    plt.legend()
     plt.show()
-
-
-
+    
+    
 
     a1 = agent1.opt.x
     a2 = agent2.opt.x
@@ -191,8 +203,117 @@ if __name__ == '__main__':
     x1 = np.random.uniform(-2, 2, 20)
     x2 = np.random.uniform(-2, 2, 20)
     x3 = np.random.uniform(-2, 2, 20)
+    
+    data = pd.read_csv(file_path)
+    best_msi = -np.inf
+    worst_msi = np.inf
+    best_params = None
+    worst_params = None
+    parameter_combinations = [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
+
+    for lambda1 in parameter_combinations:
+        for lambda2 in parameter_combinations:
+            for lambda3 in parameter_combinations:
+                X, Z = extract_data(data, lambda1, lambda2, lambda3)
+                X = X[:20]
+                Z = Z[:20]
+
+                agent1 = Agent(1, (-1, 1), 0.1)
+                agent2 = Agent(2, (-1, 1), 0.2)
+                agent3 = Agent(3, (-1, 1), 0.3)
+
+                model_Z_X_0 = GPy.models.GPRegression(Z[:, 0].reshape(-1, 1), X[:, 0].reshape(-1, 1), GPy.kern.RBF(1))
+                model_Z_X_1 = GPy.models.GPRegression(Z[:, 1].reshape(-1, 1), X[:, 1].reshape(-1, 1), GPy.kern.RBF(1))
+
+                actions_1, actions_2,actions_3 = run_experiments(agent1, agent2,agent3, 20)
+
+                s1 = agent1.opt.x
+                s2 = agent2.opt.x
+                s3 = agent3.opt.x
+                
+                
+                m1 = agent1.gp.predict(s1)
+                m2 = agent2.gp.predict(s2)  
+                m3 = agent3.gp.predict(s3)
+                
+                #calculate the RMSE amoing S and m
+                msi = np.sqrt(np.mean((s1-m1)**2) + np.mean((s2-m2)**2) + np.mean((s3-m3)**2))
+
+                if msi > best_msi:
+                    best_msi = msi
+                    best_params = (lambda1, lambda2, lambda3)
+
+                if msi < worst_msi:
+                    worst_msi = msi
+                    worst_params = (lambda1, lambda2, lambda3)
+
+    print(f'lowest MSI: {best_msi} with parameters: Lambda1={best_params[0]}, Lambda2={best_params[1]}, Lambda3={best_params[2]}')
+    print(f'Highest MSI: {worst_msi} with parameters: Lambda1={worst_params[0]}, Lambda2={worst_params[1]}, Lambda3={worst_params[2]}')
+
+    X_best, Z_best = extract_data(data, best_params[0], best_params[1], best_params[2])
+    X_best = X_best[:20]
+    Z_best = Z_best[:20]
+    
+    model_best_Z_X_0 = GPy.models.GPRegression(Z_best[:, 0].reshape(-1, 1), X_best[:, 0].reshape(-1, 1), GPy.kern.RBF(1))
+    model_best_Z_X_1 = GPy.models.GPRegression(Z_best[:, 1].reshape(-1, 1), X_best[:, 1].reshape(-1, 1), GPy.kern.RBF(1))
+    model_best_Z_X_2 = GPy.models.GPRegression(Z_best[:, 2].reshape(-1, 1), X_best[:, 2].reshape(-1, 1), GPy.kern.RBF(1))
+    
+    agent1 = Agent(1, (-1, 1), 0.1)
+    agent2 = Agent(2, (-1, 1), 0.2)
+    agent3 = Agent(3, (-1, 1), 0.3)
+    
+    actions_1, actions_2,actions_3 = run_experiments(agent1, agent2,agent3, 20)
+    
+    
+    agent1.plot_opt()
+    agent2.plot_opt()
+    agent3.plot_opt()
+    plt.title("Best")
+    plt.show()
 
 
+    X_worst, Z_worst = extract_data(data, worst_params[0], worst_params[1], worst_params[2])
+    X_worst = X_worst[:20]
+    Z_worst = Z_worst[:20]
+    
+    model_worst_Z_X_0 = GPy.models.GPRegression(Z_worst[:, 0].reshape(-1, 1), X_worst[:, 0].reshape(-1, 1), GPy.kern.RBF(1))
+    model_worst_Z_X_1 = GPy.models.GPRegression(Z_worst[:, 1].reshape(-1, 1), X_worst[:, 1].reshape(-1, 1), GPy.kern.RBF(1))
+    model_worst_Z_X_2 = GPy.models.GPRegression(Z_worst[:, 2].reshape(-1, 1), X_worst[:, 2].reshape(-1, 1), GPy.kern.RBF(1))
+    
+    agent1 = Agent(1, (-1, 1), 0.1)
+    agent2 = Agent(2, (-1, 1), 0.2)
+    agent3 = Agent(3, (-1, 1), 0.3)
+    
+    
+    actions_1, actions_2,actions_3 = run_experiments(agent1, agent2,agent3, 20)
+    
+    
+    agent1.plot_opt()
+    agent2.plot_opt()
+    agent3.plot_opt()
+    plt.title("Worst")    
+    plt.show()
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
     # f_true = f(x1, x2, x3)
 

@@ -59,21 +59,21 @@ def compute_trace(model_X,model_Z,X,Z):
 
 
 def column_wise(Z_flat, X, D, N, f,lambda1,lambda2,lambda3):
-    Z = Z_flat.reshape(N, D)
+    Z_local = Z_flat.reshape(N, D)
 
     rbf_kernel = GPy.kern.RBF(D)
 
     # Define model_Z with R_z as observations
-    model_Z = GPy.models.GPRegression(Z, R.reshape(-1,1), rbf_kernel.copy())
-    model_all = GPy.models.GPRegression(Z, X,  rbf_kernel.copy())
-    mu_all, _ = model_all.predict_noiseless(Z)
+    model_Z = GPy.models.GPRegression(Z_local, R.reshape(-1,1), rbf_kernel.copy())
+    model_all = GPy.models.GPRegression(Z_local, X,  rbf_kernel.copy())
+    mu_all, _ = model_all.predict_noiseless(Z_local)
 
     
     # Initialize matrices for U_z and U_x
     U_z = np.zeros((N, D))
     U_x = np.zeros((N, D))
 
-    grad_R_Z = compute_gradient(model_Z, Z).reshape(N, D)
+    grad_R_Z = compute_gradient(model_Z, Z_local).reshape(N, D)
     grad_R_X = compute_gradient(model_X, X).reshape(N, D)
 
     action_term = 0.0
@@ -83,7 +83,7 @@ def column_wise(Z_flat, X, D, N, f,lambda1,lambda2,lambda3):
         X_d = np.zeros_like(X)
         X_d[:, d] = X[:, d]
         
-        model_d = GPy.models.GPRegression(Z, X_d,rbf_kernel.copy())
+        model_d = GPy.models.GPRegression(Z_local, X_d,rbf_kernel.copy())
         mu_d, _ = model_d.predict_noiseless(Z)
 
         cost1 = np.linalg.norm(X_d - mu_d)**2
@@ -120,7 +120,7 @@ os.makedirs(plot_directory, exist_ok=True)
 if __name__ == '__main__':
     N = 20
     D = 2
-    lambda_values =[0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
+    lambda_values =[0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
     lambda3 = 1.0
     csv_path = os.path.join(log_directory, 'experiment_data.csv')
 
@@ -151,14 +151,28 @@ if __name__ == '__main__':
             result = minimize(column_wise, Z.flatten(), args=(X, D, N, f, lambda1, lambda2, lambda3), method='L-BFGS-B', options={'ftol': 1e-2, 'gtol': 1e-2, 'xtol': 1e-2})
             total_costs[i, j] = result.fun
             
+            
+            Z_opt = result.x.reshape(N, D)
+            
+            R_Z_opt = f(Z_opt[:, 0], Z_opt[:, 1])
+            R_Z_opt_max = R_Z_opt.max()
+            
             print(f"Lambda1={lambda1}, Lambda2={lambda2}, Cost={result.fun}")
             
             data = {
-                'lambda1': lambda1,
-                'lambda2': lambda2,
-                'total_cost': result.fun
+                'Lambda1': lambda1,
+                'Lambda2': lambda2,
+                'Lambda3': lambda3,
+                'total_cost': result.fun,
+                'X1': X1,
+                'X2': X2,
+                'Z1': Z_opt[:, 0],
+                'Z2': Z_opt[:, 1],
+                'R_Z_opt': R_Z_opt,
+                'R': R,
+                'R(Z)_max': R_Z_opt_max
             }
-            df = pd.DataFrame(data, index=[0])
+            df = pd.DataFrame(data)
             if not os.path.exists(csv_path):
                 df.to_csv(csv_path, index=False, mode='w', header=True)
             else:
@@ -178,4 +192,4 @@ if __name__ == '__main__':
     ax.set_title('Total Cost for varying Lambda1 and Lambda2 with fixed Lambda3')
     plot_path = os.path.join(plot_directory, f'plot_exp_{experiment_number}_lambda1_{lambda1}_lambda2_{lambda2}_lambda3_{lambda3}.png')
     plt.savefig(plot_path)
-    plt.show()
+    # plt.show()

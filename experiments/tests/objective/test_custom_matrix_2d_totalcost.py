@@ -9,7 +9,7 @@ import matplotlib.tri as mtri
 from scipy.interpolate import LinearNDInterpolator
 import matplotlib as mpl
 
-file_path = 'experiments/tests/objective/trials/experiment7/logs/experiment_data.csv'
+file_path = 'logs/experiment_data.csv'
 data = pd.read_csv(file_path)
 # Define the global reward function
 def f(x1, x2):
@@ -50,6 +50,8 @@ def extract_data(experiment_data, lambda1, lambda2, lambda3):
     # Extract X and Z values
     X_values = experiment_data[['X1', 'X2']].values
     Z_values = experiment_data[['Z1', 'Z2']].values
+    total_cost = experiment_data['total_cost'].values
+    R_max = experiment_data['R(Z)_max'].values
 
     filtered_X = X_values[(experiment_data['Lambda1'] == lambda1) &
                             (experiment_data['Lambda2'] == lambda2) &
@@ -57,9 +59,15 @@ def extract_data(experiment_data, lambda1, lambda2, lambda3):
     filtered_Z = Z_values[(experiment_data['Lambda1'] == lambda1) &
                             (experiment_data['Lambda2'] == lambda2) &
                             (experiment_data['Lambda3'] == lambda3)]
+    filtered_costs = total_cost[(experiment_data['Lambda1'] == lambda1) &
+                            (experiment_data['Lambda2'] == lambda2) &
+                            (experiment_data['Lambda3'] == lambda3)]
+    filtered_max = R_max[(experiment_data['Lambda1'] == lambda1) &
+                            (experiment_data['Lambda2'] == lambda2) &
+                            (experiment_data['Lambda3'] == lambda3)]
     
     
-    return filtered_X, filtered_Z
+    return filtered_X, filtered_Z, filtered_costs, filtered_max
 
 def run_normal_experiment(agent1,agent2,N):  
 
@@ -122,86 +130,29 @@ def plot_data_for_lambda(data, lambda1, lambda2, lambda3):
 if __name__ == '__main__':
 
     grouped = data.groupby(['Lambda1', 'Lambda2', 'Lambda3'])
-
-    lambda1 = 0.8
-    lambda2 = 0.0
-    lambda3 = 0.6
-
-    lambda11 = 1.0
-    lambda22 = 0.2
-    lambda33 = 1.0
-
-    X, Z = extract_data(data, lambda1, lambda2, lambda3)
-    X = X[:20]
-    print(X)
-    Z = Z[:20]
-
-    X_init,Z_init = extract_data(data, lambda11, lambda22, lambda33)
-    #select the first 20
-    X_init = X_init[:20]
-    Z_init = Z_init[:20]
-
-    
-    agent1 = Agent(1, (-1, 1), 0.1)
-    agent2 = Agent(2, (-1, 1), 0.2)
-    # agent3 = Agent(3, (-1, 1), 0.3)
-
-    f1 = f(X[:,0], X[:,1])
-    f2 = f(Z[:,0], Z[:,1])
-    f3 = f(Z_init[:,0], Z_init[:,1])
-
-    print(f1.max())
-
-    plt.figure(figsize=(8, 6))
-    plt.plot(f1, label='f(X)')
-    plt.plot(f2, label='f(Z_opt)')
-    plt.plot(f3, label='f(Z_init)')
-    plt.legend()
-    plt.show()
-
-
-
-
-
-    model_Z_X_0 = GPy.models.GPRegression(Z[:,0].reshape(-1,1), X[:,0].reshape(-1,1), GPy.kern.RBF(1))
-    model_Z_X_1 = GPy.models.GPRegression(Z[:,1].reshape(-1,1), X[:,1].reshape(-1,1), GPy.kern.RBF(1))
-    # model_Z_X_2 = GPy.models.GPRegression(Z[:,2].reshape(-1,1), X[:,2].reshape(-1,1), GPy.kern.RBF(1))
-
-
-    model_X_Z_0 = GPy.models.GPRegression(X[:,0].reshape(-1,1), Z[:,0].reshape(-1,1), GPy.kern.RBF(1))
-    model_X_Z_1 = GPy.models.GPRegression(X[:,1].reshape(-1,1), Z[:,1].reshape(-1,1), GPy.kern.RBF(1))
-    # model_X_Z_2 = GPy.models.GPRegression(X[:,2].reshape(-1,1), Z[:,2].reshape(-1,1), GPy.kern.RBF(1))
-
-    actions_1, actions_2 = run_experiments(agent1,agent2,20)
-
-
-    plt.plot(f1, label='f(X)')
-    agent1.plot_opt()
-    agent2.plot_opt()
-    
-    
-    
-
-    # run_normal_experiment(agent1, agent2, 20)
-
-    agent1.plot_opt()
-    agent2.plot_opt()
-
-    plt.show()
+    lambda3 = 1.0
 
     data = pd.read_csv(file_path)
     best_msi = np.inf
     worst_msi = -np.inf
     best_params = None
     worst_params = None
-    parameter_combinations = [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
+    parameter_combinations = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+    
+    total_msi = np.zeros((len(parameter_combinations), len(parameter_combinations)))
+    total_costs_list = np.zeros((len(parameter_combinations), len(parameter_combinations)))
+    total_rmax = np.zeros((len(parameter_combinations), len(parameter_combinations)))
 
-    for lambda1 in parameter_combinations:
-        for lambda2 in parameter_combinations:
-            for lambda3 in parameter_combinations:
-                X, Z = extract_data(data, lambda1, lambda2, lambda3)
+    for i, lambda1 in enumerate(parameter_combinations):
+        for j, lambda2 in enumerate(parameter_combinations):
+                X, Z, total_costs,rmax = extract_data(data, lambda1, lambda2, lambda3)
                 X = X[:20]
                 Z = Z[:20]
+                
+                total_costs_list[i,j] = total_costs[0]
+                print(total_costs[0])
+                total_rmax[i,j] = rmax[0]
+                print(rmax[0])
 
                 agent1 = Agent(1, (-1, 1), 0.1)
                 agent2 = Agent(2, (-1, 1), 0.2)
@@ -218,94 +169,73 @@ if __name__ == '__main__':
                 m2 = agent2.gp.predict(s2)  
                 
                 #calculate the RMSE
-                msi = np.sqrt(np.mean((s1 - m1)**2) + np.mean((s2 - m2)**2))
+                total_msi[i,j] = np.sqrt(np.mean((s1 - m1)**2) + np.mean((s2 - m2)**2))
+                
+                print(f"Lambda1={lambda1}, Lambda2={lambda2}, KPI={total_msi[i,j]}")
+                
+                
+    lambda1, lambda2 = np.meshgrid(parameter_combinations, parameter_combinations)
+        
+    fig = plt.figure(figsize=(21, 7))
 
-                if msi < best_msi:
-                    best_msi = msi
-                    best_params = (lambda1, lambda2, lambda3)
+    # First subplot for Total Costs
+    ax1 = fig.add_subplot(131, projection='3d')  # 121 means 1 row, 2 columns, 1st subplot
+    ax1.plot_surface(lambda1, lambda2, total_costs_list, cmap='viridis')
+    ax1.set_xlabel('Lambda1')
+    ax1.set_ylabel('Lambda2')
+    ax1.set_zlabel('Total Cost (J)')
+    ax1.set_title('Total Cost')
 
-                if msi > worst_msi:
-                    worst_msi = msi
-                    worst_params = (lambda1, lambda2, lambda3)
-
-    print(f'Best MSI: {best_msi} with parameters: Lambda1={best_params[0]}, Lambda2={best_params[1]}, Lambda3={best_params[2]}')
-    print(f'Worst MSI: {worst_msi} with parameters: Lambda1={worst_params[0]}, Lambda2={worst_params[1]}, Lambda3={worst_params[2]}')
-
-
-
-
-
-
-
-
-
-
-
-
-    # # Plot best parameters
-    # X, Z = extract_data(data, best_params[0], best_params[1], best_params[2])
-    # X = X[:20]
-    # Z = Z[:20]
-
-    # model_best_Z_X_0 = GPy.models.GPRegression(Z[:, 0].reshape(-1, 1), X[:, 0].reshape(-1, 1), GPy.kern.RBF(1))
-    # model_best_Z_X_1 = GPy.models.GPRegression(Z[:, 1].reshape(-1, 1), X[:, 1].reshape(-1, 1), GPy.kern.RBF(1))
-
-    # agent1 = Agent(1, (-1, 1), 0.1)
-    # agent2 = Agent(2, (-1, 1), 0.2)
-
-    # actions_1, actions_2 = run_experiments(agent1, agent2, 20)
-
-    # agent1.plot_opt()
-    # agent2.plot_opt()
-    # plt.title('Best Parameters')
-
-    # plt.show()
-
+    # Second subplot for RMSE
+    ax2 = fig.add_subplot(132, projection='3d')  # 122 means 1 row, 2 columns, 2nd subplot
+    ax2.plot_surface(lambda1, lambda2, total_msi, cmap='viridis')
+    ax2.set_xlabel('Lambda1')
+    ax2.set_ylabel('Lambda2')
+    ax2.set_zlabel('RMSE')
+    ax2.set_title('Total RMSE')
     
+    total_costs_list,total_msi = np.meshgrid(parameter_combinations, parameter_combinations)
+    
+    ax3 = fig.add_subplot(133, projection='3d')  # 122 means 1 row, 2 columns, 2nd subplot
+    ax3.plot_surface(total_costs_list, total_msi, total_rmax, cmap='viridis')
+    ax3.set_xlabel('Total Cost')
+    ax3.set_ylabel('RMSE')
+    ax3.set_zlabel('R(Z)_max')
+    ax3.set_title('R(Z)_max')    
+
+    # Show the plot
+    plt.show()
     
 
-
-
-
-
-    # f_true = f(x1, x2, x3)
-
-    # rewards = f(a1, a2, a3)
     
-    # fig = plt.figure(figsize=(12, 8))
-
-    # # First subplot
-    # ax1 = fig.add_subplot(121, projection='3d')
-    # sc1 = ax1.scatter(a1, a2, a3, c=rewards, cmap=cm.viridis, marker='o')
-    # ax1.set_xlabel('X1')
-    # ax1.set_ylabel('X2')
-    # ax1.set_zlabel('X3')
-    # plt.colorbar(sc1, label='Reward')
-    # plt.title('SafeOpt')
-
-    # # Second subplot
-    # ax2 = fig.add_subplot(122, projection='3d')
-    # sc2 = ax2.scatter(x1, x2, x3, c=f_true, cmap=cm.viridis, marker='o')
-    # ax2.set_xlabel('X1')
-    # ax2.set_ylabel('X2')
-    # ax2.set_zlabel('X3')
-    # plt.colorbar(sc2, label='Reward')
-    # plt.title("True Function")
-
-
-
+    # # 3D plot of total costs
+    # # lambda1, lambda2 = np.meshgrid(parameter_combinations, parameter_combinations)
+    # fig = plt.figure()
+    # ax = fig.add_subplot(111, projection='3d')
+    # ax.plot_surface(lambda1, lambda2, total_costs_list, cmap='viridis')
+    # ax.set_xlabel('Lambda1')
+    # ax.set_ylabel('Lambda2')
+    # ax.set_zlabel('Total Cost(J)')
+    # ax.set_title('Total Cost for varying Lambda1 and Lambda2 with Lambda3=1.0')
+    # # plot_path = os.path.join(plot_directory, f'plot_exp_{experiment_number}_lambda1_{lambda1}_lambda2_{lambda2}_lambda3_{lambda3}.png')
+    # # plt.savefig(plot_path)
+    
+    # ax = fig.add_subplot(111, projection='3d')
+    # ax.plot_surface(lambda1, lambda2, total_msi, cmap='viridis')
+    # ax.set_xlabel('Lambda1')
+    # ax.set_ylabel('Lambda2')
+    # ax.set_zlabel('RMSE')
+    # ax.set_title('RMSR for varying Lambda1 and Lambda2 with Lambda3=1.0')
     # plt.show()
 
 
-    #     # Assume the data has columns named 'X', 'Y', 'Z', 'C' corresponding to your variables
-    # x = a1.flatten()  # Ensuring x is a flat array
-    # y = a2.flatten()  # Ensuring y is a flat array
-    # z = a3.flatten()  # Ensuring z is a flat array
-    # c = rewards.flatten()  # Ensuring c is a flat array
 
-    # # Set variable names for axes labels and titles
-    # list_name_variables = ['X', 'Y', 'Z', 'Color Value']
-    # index_x, index_y, index_z, index_c = 0, 1, 2, 3
+
+
+
+
+
+
 
 
 
