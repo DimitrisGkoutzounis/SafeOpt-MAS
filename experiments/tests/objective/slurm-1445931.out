@@ -1,0 +1,364 @@
+ /home/gkoutzd1/SafeOpt-MAS/experiments/tests/objective/experiment3_objective_totalcost.py:151: OptimizeWarning:Unknown solver options: xtol
+Experiment number:  0
+Running for lambda1=0.0, lambda2=0.0, lambda3=1.0
+Lambda1=0.0, Lambda2=0.0, Cost=1.2137265576472878e-06
+Experiment number:  0
+Running for lambda1=0.0, lambda2=0.1, lambda3=1.0
+Lambda1=0.0, Lambda2=0.1, Cost=0.11109501422820298
+Experiment number:  0
+Running for lambda1=0.0, lambda2=0.2, lambda3=1.0
+Lambda1=0.0, Lambda2=0.2, Cost=0.2103076349557773
+Experiment number:  0
+Running for lambda1=0.0, lambda2=0.3, lambda3=1.0
+Lambda1=0.0, Lambda2=0.3, Cost=0.17415061773960167
+Experiment number:  0
+Running for lambda1=0.0, lambda2=0.4, lambda3=1.0
+Lambda1=0.0, Lambda2=0.4, Cost=0.2250387131195856
+Experiment number:  0
+Running for lambda1=0.0, lambda2=0.5, lambda3=1.0
+Lambda1=0.0, Lambda2=0.5, Cost=0.3831427821681144
+Experiment number:  0
+Running for lambda1=0.0, lambda2=0.6, lambda3=1.0
+Lambda1=0.0, Lambda2=0.6, Cost=0.4101592385530703
+Experiment number:  0
+Running for lambda1=0.0, lambda2=0.7, lambda3=1.0
+Lambda1=0.0, Lambda2=0.7, Cost=0.45357689944354795
+Experiment number:  0
+Running for lambda1=0.0, lambda2=0.8, lambda3=1.0
+Lambda1=0.0, Lambda2=0.8, Cost=0.5066407221157779
+Experiment number:  0
+Running for lambda1=0.0, lambda2=0.9, lambda3=1.0
+Lambda1=0.0, Lambda2=0.9, Cost=0.555195769578006
+Experiment number:  0
+Running for lambda1=0.0, lambda2=1.0, lambda3=1.0
+Lambda1=0.0, Lambda2=1.0, Cost=0.6063706017612034
+Experiment number:  0
+Running for lambda1=0.1, lambda2=0.0, lambda3=1.0
+Lambda1=0.1, Lambda2=0.0, Cost=1.0824614754945845
+Experiment number:  0
+Running for lambda1=0.1, lambda2=0.1, lambda3=1.0
+Lambda1=0.1, Lambda2=0.1, Cost=1.2001953159806964
+Experiment number:  0
+Running for lambda1=0.1, lambda2=0.2, lambda3=1.0
+Lambda1=0.1, Lambda2=0.2, Cost=1.3079108966092876
+Experiment number:  0
+Running for lambda1=0.1, lambda2=0.3, lambda3=1.0
+Lambda1=0.1, Lambda2=0.3, Cost=1.4102919180453701
+Experiment number:  0
+Running for lambda1=0.1, lambda2=0.4, lambda3=1.0
+Lambda1=0.1, Lambda2=0.4, Cost=1.4995767026860376
+Experiment number:  0
+Running for lambda1=0.1, lambda2=0.5, lambda3=1.0
+Lambda1=0.1, Lambda2=0.5, Cost=1.579958036301005
+Experiment number:  0
+Running for lambda1=0.1, lambda2=0.6, lambda3=1.0
+Lambda1=0.1, Lambda2=0.6, Cost=1.5529156388367533
+Experiment number:  0
+Running for lambda1=0.1, lambda2=0.7, lambda3=1.0
+Lambda1=0.1, Lambda2=0.7, Cost=1.7102026368723422
+Experiment number:  0
+Running for lambda1=0.1, lambda2=0.8, lambda3=1.0
+Lambda1=0.1, Lambda2=0.8, Cost=1.7726894224302647
+Experiment number:  0
+Running for lambda1=0.1, lambda2=0.9, lambda3=1.0
+Lambda1=0.1, Lambda2=0.9, Cost=1.8248080473898693
+Experiment number:  0
+Running for lambda1=0.1, lambda2=1.0, lambda3=1.0
+Lambda1=0.1, Lambda2=1.0, Cost=1.874600984893725
+Experiment number:  0
+Running for lambda1=0.2, lambda2=0.0, lambda3=1.0
+Lambda1=0.2, Lambda2=0.0, Cost=2.1536068839862335
+Experiment number:  0
+Running for lambda1=0.2, lambda2=0.1, lambda3=1.0
+Lambda1=0.2, Lambda2=0.1, Cost=2.2787774523414117
+Experiment number:  0
+Running for lambda1=0.2, lambda2=0.2, lambda3=1.0
+Lambda1=0.2, Lambda2=0.2, Cost=2.391787450222889
+Experiment number:  0
+Running for lambda1=0.2, lambda2=0.3, lambda3=1.0
+Lambda1=0.2, Lambda2=0.3, Cost=2.4951733234819846
+Experiment number:  0
+Running for lambda1=0.2, lambda2=0.4, lambda3=1.0
+Lambda1=0.2, Lambda2=0.4, Cost=2.5915705713429733
+Experiment number:  0
+Running for lambda1=0.2, lambda2=0.5, lambda3=1.0
+Lambda1=0.2, Lambda2=0.5, Cost=2.681586286612602
+Experiment number:  0
+Running for lambda1=0.2, lambda2=0.6, lambda3=1.0
+Lambda1=0.2, Lambda2=0.6, Cost=2.7662413151914484
+Experiment number:  0
+Running for lambda1=0.2, lambda2=0.7, lambda3=1.0
+Lambda1=0.2, Lambda2=0.7, Cost=2.844742660729109
+Experiment number:  0
+Running for lambda1=0.2, lambda2=0.8, lambda3=1.0
+Lambda1=0.2, Lambda2=0.8, Cost=3.187424056729622
+Experiment number:  0
+Running for lambda1=0.2, lambda2=0.9, lambda3=1.0
+Lambda1=0.2, Lambda2=0.9, Cost=3.060037195719906
+Experiment number:  0
+Running for lambda1=0.2, lambda2=1.0, lambda3=1.0
+Lambda1=0.2, Lambda2=1.0, Cost=3.1116606985444437
+Experiment number:  0
+Running for lambda1=0.3, lambda2=0.0, lambda3=1.0
+Lambda1=0.3, Lambda2=0.0, Cost=3.209144763771762
+Experiment number:  0
+Running for lambda1=0.3, lambda2=0.1, lambda3=1.0
+Lambda1=0.3, Lambda2=0.1, Cost=3.3441623216611953
+Experiment number:  0
+Running for lambda1=0.3, lambda2=0.2, lambda3=1.0
+Lambda1=0.3, Lambda2=0.2, Cost=3.464369234167174
+Experiment number:  0
+Running for lambda1=0.3, lambda2=0.3, lambda3=1.0
+Lambda1=0.3, Lambda2=0.3, Cost=3.5734837124870227
+Experiment number:  0
+Running for lambda1=0.3, lambda2=0.4, lambda3=1.0
+Lambda1=0.3, Lambda2=0.4, Cost=3.6741498294589516
+Experiment number:  0
+Running for lambda1=0.3, lambda2=0.5, lambda3=1.0
+Lambda1=0.3, Lambda2=0.5, Cost=3.7683670079280476
+Experiment number:  0
+Running for lambda1=0.3, lambda2=0.6, lambda3=1.0
+Lambda1=0.3, Lambda2=0.6, Cost=3.8563300095813418
+Experiment number:  0
+Running for lambda1=0.3, lambda2=0.7, lambda3=1.0
+Lambda1=0.3, Lambda2=0.7, Cost=3.939880018549527
+Experiment number:  0
+Running for lambda1=0.3, lambda2=0.8, lambda3=1.0
+Lambda1=0.3, Lambda2=0.8, Cost=4.017985114959582
+Experiment number:  0
+Running for lambda1=0.3, lambda2=0.9, lambda3=1.0
+Lambda1=0.3, Lambda2=0.9, Cost=4.369532321488581
+Experiment number:  0
+Running for lambda1=0.3, lambda2=1.0, lambda3=1.0
+Lambda1=0.3, Lambda2=1.0, Cost=4.316110056477031
+Experiment number:  0
+Running for lambda1=0.4, lambda2=0.0, lambda3=1.0
+Lambda1=0.4, Lambda2=0.0, Cost=4.386194456558092
+Experiment number:  0
+Running for lambda1=0.4, lambda2=0.1, lambda3=1.0
+Lambda1=0.4, Lambda2=0.1, Cost=4.390978310810351
+Experiment number:  0
+Running for lambda1=0.4, lambda2=0.2, lambda3=1.0
+Lambda1=0.4, Lambda2=0.2, Cost=4.520946077753431
+Experiment number:  0
+Running for lambda1=0.4, lambda2=0.3, lambda3=1.0
+Lambda1=0.4, Lambda2=0.3, Cost=4.6370496656961
+Experiment number:  0
+Running for lambda1=0.4, lambda2=0.4, lambda3=1.0
+Lambda1=0.4, Lambda2=0.4, Cost=4.7435816160340085
+Experiment number:  0
+Running for lambda1=0.4, lambda2=0.5, lambda3=1.0
+Lambda1=0.4, Lambda2=0.5, Cost=4.842737757740892
+Experiment number:  0
+Running for lambda1=0.4, lambda2=0.6, lambda3=1.0
+Lambda1=0.4, Lambda2=0.6, Cost=4.935571844673975
+Experiment number:  0
+Running for lambda1=0.4, lambda2=0.7, lambda3=1.0
+Lambda1=0.4, Lambda2=0.7, Cost=5.024551958341932
+Experiment number:  0
+Running for lambda1=0.4, lambda2=0.8, lambda3=1.0
+Lambda1=0.4, Lambda2=0.8, Cost=5.1099398100757485
+Experiment number:  0
+Running for lambda1=0.4, lambda2=0.9, lambda3=1.0
+Lambda1=0.4, Lambda2=0.9, Cost=5.193347538139744
+Experiment number:  0
+Running for lambda1=0.4, lambda2=1.0, lambda3=1.0
+Lambda1=0.4, Lambda2=1.0, Cost=5.547258439223048
+Experiment number:  0
+Running for lambda1=0.5, lambda2=0.0, lambda3=1.0
+Lambda1=0.5, Lambda2=0.0, Cost=5.213711112855829
+Experiment number:  0
+Running for lambda1=0.5, lambda2=0.1, lambda3=1.0
+Lambda1=0.5, Lambda2=0.1, Cost=5.555998153546026
+Experiment number:  0
+Running for lambda1=0.5, lambda2=0.2, lambda3=1.0
+Lambda1=0.5, Lambda2=0.2, Cost=5.557315491873081
+Experiment number:  0
+Running for lambda1=0.5, lambda2=0.3, lambda3=1.0
+Lambda1=0.5, Lambda2=0.3, Cost=5.681292623151412
+Experiment number:  0
+Running for lambda1=0.5, lambda2=0.4, lambda3=1.0
+Lambda1=0.5, Lambda2=0.4, Cost=5.794909189946903
+Experiment number:  0
+Running for lambda1=0.5, lambda2=0.5, lambda3=1.0
+Lambda1=0.5, Lambda2=0.5, Cost=5.90134084620248
+Experiment number:  0
+Running for lambda1=0.5, lambda2=0.6, lambda3=1.0
+Lambda1=0.5, Lambda2=0.6, Cost=6.001882295102664
+Experiment number:  0
+Running for lambda1=0.5, lambda2=0.7, lambda3=1.0
+Lambda1=0.5, Lambda2=0.7, Cost=6.099582471809498
+Experiment number:  0
+Running for lambda1=0.5, lambda2=0.8, lambda3=1.0
+Lambda1=0.5, Lambda2=0.8, Cost=6.190265545917024
+Experiment number:  0
+Running for lambda1=0.5, lambda2=0.9, lambda3=1.0
+Lambda1=0.5, Lambda2=0.9, Cost=6.282670193541551
+Experiment number:  0
+Running for lambda1=0.5, lambda2=1.0, lambda3=1.0
+Lambda1=0.5, Lambda2=1.0, Cost=6.367574582449943
+Experiment number:  0
+Running for lambda1=0.6, lambda2=0.0, lambda3=1.0
+Lambda1=0.6, Lambda2=0.0, Cost=6.2406693027469755
+Experiment number:  0
+Running for lambda1=0.6, lambda2=0.1, lambda3=1.0
+Lambda1=0.6, Lambda2=0.1, Cost=6.462755696497602
+Experiment number:  0
+Running for lambda1=0.6, lambda2=0.2, lambda3=1.0
+Lambda1=0.6, Lambda2=0.2, Cost=6.639753720199602
+Experiment number:  0
+Running for lambda1=0.6, lambda2=0.3, lambda3=1.0
+Lambda1=0.6, Lambda2=0.3, Cost=6.770478654804868
+Experiment number:  0
+Running for lambda1=0.6, lambda2=0.4, lambda3=1.0
+Lambda1=0.6, Lambda2=0.4, Cost=6.831874224312577
+Experiment number:  0
+Running for lambda1=0.6, lambda2=0.5, lambda3=1.0
+Lambda1=0.6, Lambda2=0.5, Cost=6.946298262242281
+Experiment number:  0
+Running for lambda1=0.6, lambda2=0.6, lambda3=1.0
+Lambda1=0.6, Lambda2=0.6, Cost=7.0531094537972985
+Experiment number:  0
+Running for lambda1=0.6, lambda2=0.7, lambda3=1.0
+Lambda1=0.6, Lambda2=0.7, Cost=7.182484210338472
+Experiment number:  0
+Running for lambda1=0.6, lambda2=0.8, lambda3=1.0
+Lambda1=0.6, Lambda2=0.8, Cost=7.2572504708582395
+Experiment number:  0
+Running for lambda1=0.6, lambda2=0.9, lambda3=1.0
+Lambda1=0.6, Lambda2=0.9, Cost=7.321851859842215
+Experiment number:  0
+Running for lambda1=0.6, lambda2=1.0, lambda3=1.0
+Lambda1=0.6, Lambda2=1.0, Cost=7.422195334525878
+Experiment number:  0
+Running for lambda1=0.7, lambda2=0.0, lambda3=1.0
+Lambda1=0.7, Lambda2=0.0, Cost=7.208452437570772
+Experiment number:  0
+Running for lambda1=0.7, lambda2=0.1, lambda3=1.0
+Lambda1=0.7, Lambda2=0.1, Cost=7.415185596361826
+Experiment number:  0
+Running for lambda1=0.7, lambda2=0.2, lambda3=1.0
+Lambda1=0.7, Lambda2=0.2, Cost=7.588089769139419
+Experiment number:  0
+Running for lambda1=0.7, lambda2=0.3, lambda3=1.0
+Lambda1=0.7, Lambda2=0.3, Cost=7.7192117523562915
+Experiment number:  0
+Running for lambda1=0.7, lambda2=0.4, lambda3=1.0
+Lambda1=0.7, Lambda2=0.4, Cost=7.845213745761582
+Experiment number:  0
+Running for lambda1=0.7, lambda2=0.5, lambda3=1.0
+Lambda1=0.7, Lambda2=0.5, Cost=8.136743205947393
+Experiment number:  0
+Running for lambda1=0.7, lambda2=0.6, lambda3=1.0
+Lambda1=0.7, Lambda2=0.6, Cost=8.08198895657643
+Experiment number:  0
+Running for lambda1=0.7, lambda2=0.7, lambda3=1.0
+Lambda1=0.7, Lambda2=0.7, Cost=8.197567335275197
+Experiment number:  0
+Running for lambda1=0.7, lambda2=0.8, lambda3=1.0
+Lambda1=0.7, Lambda2=0.8, Cost=8.308378618965385
+Experiment number:  0
+Running for lambda1=0.7, lambda2=0.9, lambda3=1.0
+Lambda1=0.7, Lambda2=0.9, Cost=8.414140941085035
+Experiment number:  0
+Running for lambda1=0.7, lambda2=1.0, lambda3=1.0
+Lambda1=0.7, Lambda2=1.0, Cost=8.515029512742874
+Experiment number:  0
+Running for lambda1=0.8, lambda2=0.0, lambda3=1.0
+Lambda1=0.8, Lambda2=0.0, Cost=8.254442238249048
+Experiment number:  0
+Running for lambda1=0.8, lambda2=0.1, lambda3=1.0
+Lambda1=0.8, Lambda2=0.1, Cost=8.468897115539587
+Experiment number:  0
+Running for lambda1=0.8, lambda2=0.2, lambda3=1.0
+Lambda1=0.8, Lambda2=0.2, Cost=8.595578697270964
+Experiment number:  0
+Running for lambda1=0.8, lambda2=0.3, lambda3=1.0
+Lambda1=0.8, Lambda2=0.3, Cost=8.747551875285044
+Experiment number:  0
+Running for lambda1=0.8, lambda2=0.4, lambda3=1.0
+Lambda1=0.8, Lambda2=0.4, Cost=9.083766290310429
+Experiment number:  0
+Running for lambda1=0.8, lambda2=0.5, lambda3=1.0
+Lambda1=0.8, Lambda2=0.5, Cost=9.21316320018146
+Experiment number:  0
+Running for lambda1=0.8, lambda2=0.6, lambda3=1.0
+Lambda1=0.8, Lambda2=0.6, Cost=9.14652598000874
+Experiment number:  0
+Running for lambda1=0.8, lambda2=0.7, lambda3=1.0
+Lambda1=0.8, Lambda2=0.7, Cost=9.261264470990994
+Experiment number:  0
+Running for lambda1=0.8, lambda2=0.8, lambda3=1.0
+Lambda1=0.8, Lambda2=0.8, Cost=9.373661107734835
+Experiment number:  0
+Running for lambda1=0.8, lambda2=0.9, lambda3=1.0
+Lambda1=0.8, Lambda2=0.9, Cost=9.482438506156976
+Experiment number:  0
+Running for lambda1=0.8, lambda2=1.0, lambda3=1.0
+Lambda1=0.8, Lambda2=1.0, Cost=9.587349799531667
+Experiment number:  0
+Running for lambda1=0.9, lambda2=0.0, lambda3=1.0
+Lambda1=0.9, Lambda2=0.0, Cost=9.227959716375013
+Experiment number:  0
+Running for lambda1=0.9, lambda2=0.1, lambda3=1.0
+Lambda1=0.9, Lambda2=0.1, Cost=9.450898701815603
+Experiment number:  0
+Running for lambda1=0.9, lambda2=0.2, lambda3=1.0
+Lambda1=0.9, Lambda2=0.2, Cost=9.633422609346136
+Experiment number:  0
+Running for lambda1=0.9, lambda2=0.3, lambda3=1.0
+Lambda1=0.9, Lambda2=0.3, Cost=10.013717403867018
+Experiment number:  0
+Running for lambda1=0.9, lambda2=0.4, lambda3=1.0
+Lambda1=0.9, Lambda2=0.4, Cost=10.161335395125473
+Experiment number:  0
+Running for lambda1=0.9, lambda2=0.5, lambda3=1.0
+Lambda1=0.9, Lambda2=0.5, Cost=10.291322760325002
+Experiment number:  0
+Running for lambda1=0.9, lambda2=0.6, lambda3=1.0
+Lambda1=0.9, Lambda2=0.6, Cost=10.42235914634715
+Experiment number:  0
+Running for lambda1=0.9, lambda2=0.7, lambda3=1.0
+Lambda1=0.9, Lambda2=0.7, Cost=10.317185966962992
+Experiment number:  0
+Running for lambda1=0.9, lambda2=0.8, lambda3=1.0
+Lambda1=0.9, Lambda2=0.8, Cost=10.43070642799635
+Experiment number:  0
+Running for lambda1=0.9, lambda2=0.9, lambda3=1.0
+Lambda1=0.9, Lambda2=0.9, Cost=10.541759153238813
+Experiment number:  0
+Running for lambda1=0.9, lambda2=1.0, lambda3=1.0
+Lambda1=0.9, Lambda2=1.0, Cost=10.649640774761812
+Experiment number:  0
+Running for lambda1=1.0, lambda2=0.0, lambda3=1.0
+Lambda1=1.0, Lambda2=0.0, Cost=10.23459170459647
+Experiment number:  0
+Running for lambda1=1.0, lambda2=0.1, lambda3=1.0
+Lambda1=1.0, Lambda2=0.1, Cost=10.468043482736757
+Experiment number:  0
+Running for lambda1=1.0, lambda2=0.2, lambda3=1.0
+Lambda1=1.0, Lambda2=0.2, Cost=10.658444140404923
+Experiment number:  0
+Running for lambda1=1.0, lambda2=0.3, lambda3=1.0
+Lambda1=1.0, Lambda2=0.3, Cost=11.070392644493277
+Experiment number:  0
+Running for lambda1=1.0, lambda2=0.4, lambda3=1.0
+Lambda1=1.0, Lambda2=0.4, Cost=11.23014892758407
+Experiment number:  0
+Running for lambda1=1.0, lambda2=0.5, lambda3=1.0
+Lambda1=1.0, Lambda2=0.5, Cost=11.367813027063146
+Experiment number:  0
+Running for lambda1=1.0, lambda2=0.6, lambda3=1.0
+Lambda1=1.0, Lambda2=0.6, Cost=11.495069716256982
+Experiment number:  0
+Running for lambda1=1.0, lambda2=0.7, lambda3=1.0
+Lambda1=1.0, Lambda2=0.7, Cost=11.369539114244745
+Experiment number:  0
+Running for lambda1=1.0, lambda2=0.8, lambda3=1.0
+Lambda1=1.0, Lambda2=0.8, Cost=11.482292583170395
+Experiment number:  0
+Running for lambda1=1.0, lambda2=0.9, lambda3=1.0
+Lambda1=1.0, Lambda2=0.9, Cost=11.595160312634055
+Experiment number:  0
+Running for lambda1=1.0, lambda2=1.0, lambda3=1.0
+Lambda1=1.0, Lambda2=1.0, Cost=11.705555866677033

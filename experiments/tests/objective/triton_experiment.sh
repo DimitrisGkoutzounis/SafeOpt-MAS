@@ -8,5 +8,5 @@
 
 source activate conda-example  
 
-srun python3 experiment3_objective.py
+srun python3 experiment3_objective_totalcost.py
 
