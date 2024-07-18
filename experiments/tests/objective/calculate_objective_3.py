@@ -267,4 +267,7 @@ ax2.legend()
 ax2.set_title('Reward vs x2')
 
 
+plt.figure(figsize=(15, 6))
+plt.plot
+
  

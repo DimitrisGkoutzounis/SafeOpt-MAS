@@ -10,6 +10,7 @@ from scipy.interpolate import LinearNDInterpolator
 import matplotlib as mpl
 
 file_path = 'experiments/tests/objective/trials/experiment7/logs/experiment_data.csv'
+# file_path = 'logs/experiment_data.csv'
 data = pd.read_csv(file_path)
 # Define the global reward function
 def f(x1, x2):
@@ -123,9 +124,9 @@ if __name__ == '__main__':
 
     grouped = data.groupby(['Lambda1', 'Lambda2', 'Lambda3'])
 
-    lambda1 = 0.8
+    lambda1 = 1.0
     lambda2 = 0.0
-    lambda3 = 0.6
+    lambda3 = 0.2
 
     lambda11 = 1.0
     lambda22 = 0.2
@@ -142,25 +143,22 @@ if __name__ == '__main__':
     Z_init = Z_init[:20]
 
     
-    agent1 = Agent(1, (-1, 1), 0.1)
-    agent2 = Agent(2, (-1, 1), 0.2)
+    # agent1 = Agent(1, (-1, 1), 0.1)
+    # agent2 = Agent(2, (-1, 1), 0.2)
     # agent3 = Agent(3, (-1, 1), 0.3)
 
     f1 = f(X[:,0], X[:,1])
     f2 = f(Z[:,0], Z[:,1])
     f3 = f(Z_init[:,0], Z_init[:,1])
 
-    print(f1.max())
+    # print(f1.max())
 
-    plt.figure(figsize=(8, 6))
-    plt.plot(f1, label='f(X)')
-    plt.plot(f2, label='f(Z_opt)')
-    plt.plot(f3, label='f(Z_init)')
-    plt.legend()
-    plt.show()
-
-
-
+    # plt.figure(figsize=(8, 6))
+    # plt.plot(f1, label='f(X)')
+    # plt.plot(f2, label='f(Z_opt)')
+    # plt.plot(f3, label='f(Z_init)')
+    # plt.legend()
+    # plt.show()
 
 
     model_Z_X_0 = GPy.models.GPRegression(Z[:,0].reshape(-1,1), X[:,0].reshape(-1,1), GPy.kern.RBF(1))
@@ -172,33 +170,30 @@ if __name__ == '__main__':
     model_X_Z_1 = GPy.models.GPRegression(X[:,1].reshape(-1,1), Z[:,1].reshape(-1,1), GPy.kern.RBF(1))
     # model_X_Z_2 = GPy.models.GPRegression(X[:,2].reshape(-1,1), Z[:,2].reshape(-1,1), GPy.kern.RBF(1))
 
-    actions_1, actions_2 = run_experiments(agent1,agent2,20)
+    # actions_1, actions_2 = run_experiments(agent1,agent2,20)
 
 
-    plt.plot(f1, label='f(X)')
-    agent1.plot_opt()
-    agent2.plot_opt()
+    # # plt.plot(f1, label='f(X)')
+    # agent1.plot_opt()
+    # plt.title("1.0, 0.0, 0.2")
+    # agent2.plot_opt()
+    # plt.title("1.0, 0.0, 0.2")
+
+    # plt.show()
     
     
-    
-
-    # run_normal_experiment(agent1, agent2, 20)
-
-    agent1.plot_opt()
-    agent2.plot_opt()
-
-    plt.show()
-
     data = pd.read_csv(file_path)
     best_msi = np.inf
     worst_msi = -np.inf
     best_params = None
     worst_params = None
-    parameter_combinations = [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
+    parameter_combinations = [0.0, 0.2, 0.4, 0.6, 0.8, 1.0] 
+    total_run = 0
 
     for lambda1 in parameter_combinations:
         for lambda2 in parameter_combinations:
             for lambda3 in parameter_combinations:
+                total_run += 1
                 X, Z = extract_data(data, lambda1, lambda2, lambda3)
                 X = X[:20]
                 Z = Z[:20]
@@ -209,7 +204,7 @@ if __name__ == '__main__':
                 model_Z_X_0 = GPy.models.GPRegression(Z[:, 0].reshape(-1, 1), X[:, 0].reshape(-1, 1), GPy.kern.RBF(1))
                 model_Z_X_1 = GPy.models.GPRegression(Z[:, 1].reshape(-1, 1), X[:, 1].reshape(-1, 1), GPy.kern.RBF(1))
 
-                actions_1, actions_2 = run_experiments(agent1, agent2, 20)
+                actions_1, actions_2 = run_experiments(agent1, agent2, 5)
 
                 s1 = agent1.opt.x
                 s2 = agent2.opt.x
@@ -230,22 +225,11 @@ if __name__ == '__main__':
 
     print(f'Best MSI: {best_msi} with parameters: Lambda1={best_params[0]}, Lambda2={best_params[1]}, Lambda3={best_params[2]}')
     print(f'Worst MSI: {worst_msi} with parameters: Lambda1={worst_params[0]}, Lambda2={worst_params[1]}, Lambda3={worst_params[2]}')
-
-
-
-
-
-
-
-
-
-
+    print(f'Total runs: {total_run}')
 
 
     # # Plot best parameters
     # X, Z = extract_data(data, best_params[0], best_params[1], best_params[2])
-    # X = X[:20]
-    # Z = Z[:20]
 
     # model_best_Z_X_0 = GPy.models.GPRegression(Z[:, 0].reshape(-1, 1), X[:, 0].reshape(-1, 1), GPy.kern.RBF(1))
     # model_best_Z_X_1 = GPy.models.GPRegression(Z[:, 1].reshape(-1, 1), X[:, 1].reshape(-1, 1), GPy.kern.RBF(1))
@@ -260,8 +244,36 @@ if __name__ == '__main__':
     # plt.title('Best Parameters')
 
     # plt.show()
-
     
+    
+    # # Plot worst parameters
+    # X, Z = extract_data(data, worst_params[0], worst_params[1], worst_params[2])
+
+    # model_worst_Z_X_0 = GPy.models.GPRegression(Z[:, 0].reshape(-1, 1), X[:, 0].reshape(-1, 1), GPy.kern.RBF(1))
+    # model_worst_Z_X_1 = GPy.models.GPRegression(Z[:, 1].reshape(-1, 1), X[:, 1].reshape(-1, 1), GPy.kern.RBF(1))
+
+    # agent1 = Agent(1, (-1, 1), 0.1)
+    # agent2 = Agent(2, (-1, 1), 0.2)
+
+    # actions_1, actions_2 = run_experiments(agent1, agent2, 20)
+
+    # agent1.plot_opt()
+    # agent2.plot_opt()
+    # plt.title('Worst Parameters')
+
+    # plt.show()
+
+
+    plt.figure(figsize=(8, 6))
+    plt.scatter(X[:, 0], X[:, 1], label='Data from X', color='blue', marker='o')  # Points from X
+    plt.scatter(Z[:, 0], Z[:, 1], label='Data from Z', color='red', marker='x')   # Points from Z
+
+    plt.xlabel('Parameter 1')
+    plt.ylabel('Parameter 2')
+    plt.title('Visual Comparison of Data from X and Z')
+    plt.legend()
+    plt.show()
+        
     
 
 

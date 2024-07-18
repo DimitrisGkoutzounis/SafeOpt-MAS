@@ -137,7 +137,7 @@ if __name__ == '__main__':
     worst_msi = -np.inf
     best_params = None
     worst_params = None
-    parameter_combinations = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+    parameter_combinations = [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
     
     total_msi = np.zeros((len(parameter_combinations), len(parameter_combinations)))
     total_costs_list = np.zeros((len(parameter_combinations), len(parameter_combinations)))
@@ -160,7 +160,7 @@ if __name__ == '__main__':
                 model_Z_X_0 = GPy.models.GPRegression(Z[:, 0].reshape(-1, 1), X[:, 0].reshape(-1, 1), GPy.kern.RBF(1))
                 model_Z_X_1 = GPy.models.GPRegression(Z[:, 1].reshape(-1, 1), X[:, 1].reshape(-1, 1), GPy.kern.RBF(1))
 
-                actions_1, actions_2 = run_experiments(agent1, agent2, 20)
+                actions_1, actions_2 = run_experiments(agent1, agent2, 5)
 
                 s1 = agent1.opt.x
                 s2 = agent2.opt.x
@@ -171,9 +171,19 @@ if __name__ == '__main__':
                 #calculate the RMSE
                 total_msi[i,j] = np.sqrt(np.mean((s1 - m1)**2) + np.mean((s2 - m2)**2))
                 
+                if total_msi[i,j] < best_msi:
+                    best_msi = total_msi[i,j]
+                    best_params = (lambda1, lambda2, lambda3)
+
+                if total_msi[i,j] > worst_msi:
+                    worst_msi = total_msi[i,j]
+                    worst_params = (lambda1, lambda2, lambda3)
+                
                 print(f"Lambda1={lambda1}, Lambda2={lambda2}, KPI={total_msi[i,j]}")
                 
                 
+    print(f"Best KPI: {best_msi} for Lambda1={best_params[0]}, Lambda2={best_params[1]}, Lambda3={best_params[2]}")
+    print(f"Worst KPI: {worst_msi} for Lambda1={worst_params[0]}, Lambda2={worst_params[1]}, Lambda3={worst_params[2]}")
     lambda1, lambda2 = np.meshgrid(parameter_combinations, parameter_combinations)
         
     fig = plt.figure(figsize=(21, 7))

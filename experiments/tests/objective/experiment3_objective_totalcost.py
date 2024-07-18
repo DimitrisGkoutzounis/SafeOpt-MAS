@@ -118,9 +118,9 @@ os.makedirs(log_directory, exist_ok=True)
 os.makedirs(plot_directory, exist_ok=True)
 
 if __name__ == '__main__':
-    N = 20
+    N = 10
     D = 2
-    lambda_values =[0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+    lambda_values =[0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
     lambda3 = 1.0
     csv_path = os.path.join(log_directory, 'experiment_data.csv')
 
