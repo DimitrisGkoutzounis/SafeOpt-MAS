@@ -131,6 +131,7 @@ def column_wise(Z_flat, X, D, N, sigma2, f):
     model_Z = GPy.models.GPRegression(Z, R.reshape(-1,1), GPy.kern.RBF(D))
     model_all = GPy.models.GPRegression(Z, X,  GPy.kern.RBF(D))
     mu_all, _ = model_all.predict_noiseless(Z)
+    print("mu_all\n", mu_all)
 
     loss = 0.0
     grad_R_Z_norm_column = []
@@ -139,6 +140,8 @@ def column_wise(Z_flat, X, D, N, sigma2, f):
     # Initialize matrices for U_z and U_x
     U_z = np.zeros((N, D))
     U_x = np.zeros((N, D))
+    
+    action_term = 0.0
 
     for d in range(D):
         X_d = np.zeros_like(X)
@@ -146,11 +149,12 @@ def column_wise(Z_flat, X, D, N, sigma2, f):
         
         model_d = GPy.models.GPRegression(Z, X_d,GPy.kern.RBF(D))
         mu_d, _ = model_d.predict_noiseless(Z)
+        
 
         diff1 = np.linalg.norm(X_d - mu_d)**2
         diff2 = np.linalg.norm(mu_d - mu_all[:, [d]])**2
         
-        action_term += diff1 + 0.2 * diff2
+        action_term += 0.1 * diff1 + 0.2 * diff2
 
         # Gradient-based alignment term
         grad_R_Z = compute_gradient(model_Z, Z).reshape(N, D)

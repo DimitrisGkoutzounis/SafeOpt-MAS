@@ -9,6 +9,7 @@ import matplotlib.tri as mtri
 from scipy.interpolate import LinearNDInterpolator
 import matplotlib as mpl
 
+
 file_path = 'experiments/tests/objective/trials/experiment5/logs/experiment_data.csv'
 data = pd.read_csv(file_path)
 # Define the global reward function
@@ -187,7 +188,7 @@ if __name__ == '__main__':
     agent2 = Agent(2, (-1, 1), 0.2)
     agent3 = Agent(3, (-1, 1), 0.3)
 
-    # Assume some interactions or processes here with R and R_Z_opt
+    
     plt.figure(figsize=(8, 6))
     plt.plot(R, label='R(x)')
     plt.plot(R_Z_opt, label='R(z_opt)')
