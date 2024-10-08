@@ -144,9 +144,11 @@ def column_wise(Z_flat, X, D, N, f,lambda1,lambda2,lambda3):
     J3_history.append(cost3)
     J1_history.append(cost1)
     J2_history.append(cost2)
-    # print("Trace(opt): ", np.trace(dot_product_matrix)/D)
+    print("action_term: ", action_term)
     
     total_cost = action_term + lambda3 * cost3 
+    
+    print("Total Cost: ", total_cost)
 
     Total_cost_history.append(total_cost)
 
@@ -155,7 +157,7 @@ def column_wise(Z_flat, X, D, N, f,lambda1,lambda2,lambda3):
 
 
 if __name__ == '__main__':
-    N=20
+    N=10
     D=2
 
     # np.random.seed(0)
@@ -172,6 +174,7 @@ if __name__ == '__main__':
     #perfrom experiments
     R = f(X1,X2)
     R_Z_init = f(Z[:,0], Z[:,1])
+    print(X.shape)
 
     model_X = GPy.models.GPRegression(X, R_original[:, None], GPy.kern.RBF(input_dim=D))
     model_Z_init = GPy.models.GPRegression(Z, R_Z_init[:, None], GPy.kern.RBF(input_dim=D))
