@@ -1,0 +1,14 @@
+
+[all]
+botorch==0.3.0
+pyyaml
+hydra-core==0.11.3
+nlopt==2.6.2
+classireg@ git+ssh://git@github.com/alonrot/classified_regression.git
+
+[classified_reg]
+botorch==0.3.0
+pyyaml
+hydra-core==0.11.3
+nlopt==2.6.2
+classireg@ git+ssh://git@github.com/alonrot/classified_regression.git

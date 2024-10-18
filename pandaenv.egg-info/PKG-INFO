@@ -1,0 +1,24 @@
+Metadata-Version: 2.1
+Name: pandaenv
+Version: 0.0.1
+Author: Dimitris Gkoutzounis
+Author-email: dimitrios.gkoutzounis@aalto.fi
+License: MIT
+Classifier: Development Status :: 3 - Alpha
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.5
+Provides-Extra: classified-reg
+Requires-Dist: botorch==0.3.0; extra == "classified-reg"
+Requires-Dist: pyyaml; extra == "classified-reg"
+Requires-Dist: hydra-core==0.11.3; extra == "classified-reg"
+Requires-Dist: nlopt==2.6.2; extra == "classified-reg"
+Requires-Dist: classireg@ git+ssh://git@github.com/alonrot/classified_regression.git ; extra == "classified-reg"
+Provides-Extra: all
+Requires-Dist: botorch==0.3.0; extra == "all"
+Requires-Dist: pyyaml; extra == "all"
+Requires-Dist: hydra-core==0.11.3; extra == "all"
+Requires-Dist: nlopt==2.6.2; extra == "all"
+Requires-Dist: classireg@ git+ssh://git@github.com/alonrot/classified_regression.git ; extra == "all"
